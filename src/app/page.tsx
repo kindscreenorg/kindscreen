@@ -1,21 +1,19 @@
 import Link from 'next/link'
+import Image from 'next/image'
 
 export default function HomePage() {
   return (
     <main className="min-h-screen bg-cream flex flex-col items-center justify-center px-4 py-16">
       {/* Brand */}
       <div className="mb-8 text-center">
-        <div className="inline-flex items-center justify-center w-20 h-20 rounded-3xl bg-peach shadow-warm-md mb-4">
-          <span className="text-4xl" role="img" aria-label="screen with heart">
-            📺
-          </span>
-        </div>
-        <h1 className="font-heading text-4xl font-bold text-warm-700 tracking-tight">
-          KindScreen
-        </h1>
-        <p className="mt-2 text-lg text-warm-400 font-medium">
-          Parent-reviewed. Kid-approved.
-        </p>
+        <Image
+          src="/logo.png"
+          alt="KindScreen — Safe Videos for Kids"
+          width={1536}
+          height={1024}
+          className="h-36 w-auto mx-auto"
+          priority
+        />
       </div>
 
       {/* Hero copy */}

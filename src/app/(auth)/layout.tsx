@@ -1,16 +1,15 @@
 import type { ReactNode } from 'react'
+import Image from 'next/image'
+import Link from 'next/link'
 
 export default function AuthLayout({ children }: { children: ReactNode }) {
   return (
     <div className="min-h-screen bg-cream flex flex-col items-center justify-center px-4 py-12">
       {/* Logo */}
-      <div className="mb-8 flex flex-col items-center gap-3">
-        <div className="w-14 h-14 rounded-2xl bg-peach flex items-center justify-center shadow-warm-md">
-          <span className="text-2xl" role="img" aria-label="KindScreen">📺</span>
-        </div>
-        <span className="font-heading font-bold text-2xl text-warm-800 tracking-tight">
-          KindScreen
-        </span>
+      <div className="mb-8">
+        <Link href="/">
+          <Image src="/logo.png" alt="KindScreen" width={1536} height={1024} className="h-20 w-auto" priority />
+        </Link>
       </div>
 
       {/* Form card */}
