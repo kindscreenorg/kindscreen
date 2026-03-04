@@ -1,0 +1,20 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer components {
+  /* Primary CTA — peach background, white text */
+  .btn-primary {
+    @apply inline-flex items-center justify-center px-6 py-3 rounded-2xl bg-peach text-white font-heading font-semibold text-sm tracking-wide shadow-warm transition-all duration-200 hover:bg-peach-500 hover:shadow-warm-md active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed;
+  }
+
+  /* Secondary action — warm cream background, warm text */
+  .btn-secondary {
+    @apply inline-flex items-center justify-center px-6 py-3 rounded-2xl bg-cream-100 text-warm border border-warm-200 font-heading font-semibold text-sm tracking-wide shadow-warm-sm transition-all duration-200 hover:bg-cream-200 hover:shadow-warm active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed;
+  }
+
+  /* Warm card — used for content cards throughout the app */
+  .card-warm {
+    @apply bg-white rounded-3xl shadow-warm p-6 border border-cream-200;
+  }
+}
