@@ -1,7 +1,19 @@
 'use client'
 
-import { useState, useEffect, useCallback } from 'react'
+import { useState, useEffect, useCallback, useRef } from 'react'
 import { Constants } from '@/types/database'
+
+function loadYTApi(onReady: () => void) {
+  if (typeof window === 'undefined') return
+  if (window.YT?.Player) { onReady(); return }
+  const prev = window.onYouTubeIframeAPIReady
+  window.onYouTubeIframeAPIReady = () => { prev?.(); onReady() }
+  if (!document.querySelector('script[src*="youtube.com/iframe_api"]')) {
+    const s = document.createElement('script')
+    s.src = 'https://www.youtube.com/iframe_api'
+    document.head.appendChild(s)
+  }
+}
 
 type AgeBand = typeof Constants.public.Enums.age_band[number]
 
@@ -46,6 +58,8 @@ export default function ReviewPage() {
   const [rejectionReason, setRejectionReason] = useState('')
   const [submitting, setSubmitting] = useState(false)
   const [submitError, setSubmitError] = useState('')
+  const [videoEnded, setVideoEnded] = useState(false)
+  const playerRef = useRef<YTPlayer | null>(null)
 
   const fetchNext = useCallback(async () => {
     setLoadingNext(true)
@@ -63,6 +77,7 @@ export default function ReviewPage() {
       setAgeBand('')
       setVerdict(null)
       setRejectionReason('')
+      setVideoEnded(false)
     } catch {
       setVideo(null)
     } finally {
@@ -73,6 +88,30 @@ export default function ReviewPage() {
   useEffect(() => {
     void fetchNext()
   }, [fetchNext])
+
+  // IFrame API player
+  useEffect(() => {
+    if (!video) return
+    let destroyed = false
+    loadYTApi(() => {
+      if (destroyed) return
+      playerRef.current?.destroy()
+      playerRef.current = new window.YT.Player('yt-review-player', {
+        videoId: video.youtube_id,
+        playerVars: { rel: 0, modestbranding: 1 },
+        events: {
+          onStateChange: (e) => {
+            if (e.data === window.YT.PlayerState.ENDED) setVideoEnded(true)
+          },
+        },
+      })
+    })
+    return () => {
+      destroyed = true
+      playerRef.current?.destroy()
+      playerRef.current = null
+    }
+  }, [video?.youtube_id]) // eslint-disable-line react-hooks/exhaustive-deps
 
   function toggleAnswer(key: QuestionKey) {
     setAnswers((prev) => ({ ...prev, [key]: !prev[key] }))
@@ -155,15 +194,16 @@ export default function ReviewPage() {
 
       <div className="space-y-5">
         {/* Video embed */}
-        <div className="rounded-2xl overflow-hidden shadow-warm-sm bg-black aspect-video">
-          <iframe
-            key={video.youtube_id}
-            src={`https://www.youtube.com/embed/${video.youtube_id}?rel=0&modestbranding=1`}
-            title={video.title}
-            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-            allowFullScreen
-            className="w-full h-full"
-          />
+        <div className="relative rounded-2xl overflow-hidden shadow-warm-sm bg-black aspect-video">
+          <div id="yt-review-player" className="w-full h-full" />
+
+          {/* End-screen blocker — shown when video ends */}
+          {videoEnded && (
+            <div className="absolute inset-0 bg-black/85 flex flex-col items-center justify-center text-center p-6">
+              <p className="text-white font-heading font-bold text-lg mb-2">Video ended</p>
+              <p className="text-white/60 text-sm">Scroll down to complete your review ↓</p>
+            </div>
+          )}
         </div>
 
         {/* Video info */}

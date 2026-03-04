@@ -171,7 +171,7 @@ export default function BrowseClient({
         )}
       </div>
 
-      <VideoModal video={activeVideo} onClose={() => setActiveVideo(null)} />
+      <VideoModal video={activeVideo} onClose={() => setActiveVideo(null)} onVideoChange={setActiveVideo} />
     </div>
   )
 }
