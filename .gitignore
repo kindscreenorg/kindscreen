@@ -38,3 +38,6 @@ Thumbs.db
 # Supabase
 supabase/.branches
 supabase/.temp
+
+# Test coverage
+coverage/
