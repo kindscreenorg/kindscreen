@@ -65,7 +65,7 @@ Reviewers never see each other's verdicts until they've submitted their own — 
 
 ## Donation milestones
 
-KindScreen runs on community support. All funding is handled via [GitHub Sponsors](https://github.com/sponsors/kindscreen) and is fully transparent.
+KindScreen runs on community support. All funding is handled via [GitHub Sponsors](https://github.com/sponsors/felipeamarante) and is fully transparent.
 
 | Milestone | What it unlocks |
 |---|---|

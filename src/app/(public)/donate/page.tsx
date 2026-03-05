@@ -36,7 +36,7 @@ export default async function DonatePage() {
           {t.donate.subtitle}
         </p>
         <a
-          href="https://github.com/sponsors/kindscreen"
+          href="https://github.com/sponsors/felipeamarante"
           target="_blank"
           rel="noopener noreferrer"
           className="btn-primary inline-block mt-2"
@@ -82,7 +82,7 @@ export default async function DonatePage() {
         <p className="text-xs text-warm-400 mt-2">
           {t.donate.updatedManually}{' '}
           <a
-            href="https://github.com/sponsors/kindscreen"
+            href="https://github.com/sponsors/felipeamarante"
             target="_blank"
             rel="noopener noreferrer"
             className="underline hover:text-warm-600"
