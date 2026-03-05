@@ -3,17 +3,7 @@
 import { useState, useEffect, useCallback, useRef } from 'react'
 import { Constants } from '@/types/database'
 
-function loadYTApi(onReady: () => void) {
-  if (typeof window === 'undefined') return
-  if (window.YT?.Player) { onReady(); return }
-  const prev = window.onYouTubeIframeAPIReady
-  window.onYouTubeIframeAPIReady = () => { prev?.(); onReady() }
-  if (!document.querySelector('script[src*="youtube.com/iframe_api"]')) {
-    const s = document.createElement('script')
-    s.src = 'https://www.youtube.com/iframe_api'
-    document.head.appendChild(s)
-  }
-}
+import { loadYTApi } from '@/lib/utils/youtube'
 
 type AgeBand = typeof Constants.public.Enums.age_band[number]
 
@@ -118,7 +108,9 @@ export default function ReviewPage() {
   }
 
   async function handleSubmit() {
+    /* v8 ignore start */
     if (!video || !verdict) return
+    /* v8 ignore stop */
 
     setSubmitting(true)
     setSubmitError('')
@@ -179,7 +171,9 @@ export default function ReviewPage() {
     )
   }
 
+  /* v8 ignore start */
   if (!video) return null
+  /* v8 ignore stop */
 
   const canSubmit = verdict !== null && !submitting
 

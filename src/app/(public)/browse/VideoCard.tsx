@@ -7,24 +7,19 @@ interface VideoCardProps {
 }
 
 export default function VideoCard({ video, onClick }: VideoCardProps) {
-  const { title, thumbnail_url, age_band, category, channels } = video
+  const { title, thumbnail_url, youtube_id, age_band, category, channels } = video
+  const thumb = thumbnail_url ?? `https://img.youtube.com/vi/${youtube_id}/hqdefault.jpg`
 
   return (
     <button onClick={onClick} className="group text-left w-full">
       <div className="relative aspect-video rounded-2xl overflow-hidden bg-warm-100 shadow-warm group-hover:shadow-warm-md transition">
-        {thumbnail_url ? (
-          <Image
-            src={thumbnail_url}
-            fill
-            alt={title}
-            className="object-cover"
-            sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
-          />
-        ) : (
-          <div className="w-full h-full bg-peach-100 flex items-center justify-center text-3xl">
-            📺
-          </div>
-        )}
+        <Image
+          src={thumb}
+          fill
+          alt={title}
+          className="object-cover"
+          sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
+        />
         {/* Play overlay */}
         <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition bg-black/20">
           <div className="w-12 h-12 rounded-full bg-peach/90 flex items-center justify-center text-white text-lg pl-0.5">

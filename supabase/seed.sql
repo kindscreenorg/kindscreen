@@ -8,9 +8,16 @@
 -- ----------------------------------------------------------------
 -- Auth users
 -- Three fixed UUIDs for deterministic local testing.
+-- All fields required by GoTrue for email/password sign-in:
+--   instance_id = zero UUID, aud = 'authenticated',
+--   raw_user_meta_data must include email_verified,
+--   auth.identities.provider_id must be the user UUID (not email).
 -- ----------------------------------------------------------------
 INSERT INTO auth.users (
+  instance_id,
   id,
+  aud,
+  role,
   email,
   encrypted_password,
   email_confirmed_at,
@@ -19,44 +26,61 @@ INSERT INTO auth.users (
   raw_app_meta_data,
   raw_user_meta_data,
   is_super_admin,
-  role
+  is_sso_user,
+  is_anonymous,
+  confirmation_token,
+  recovery_token,
+  email_change_token_new,
+  email_change_token_current,
+  email_change,
+  phone_change
 ) VALUES
   -- admin / moderator account
   (
+    '00000000-0000-0000-0000-000000000000',
     '00000000-0000-0000-0000-000000000001',
+    'authenticated',
+    'authenticated',
     'admin@kindscreen.dev',
     crypt('Password123!', gen_salt('bf')),
     now(), now(), now(),
     '{"provider":"email","providers":["email"]}',
-    '{"username":"admin_alice"}',
-    false,
-    'authenticated'
+    '{"sub":"00000000-0000-0000-0000-000000000001","email":"admin@kindscreen.dev","email_verified":true,"phone_verified":false}',
+    false, false, false,
+    '', '', '', '', '', ''
   ),
   -- trusted reviewer
   (
+    '00000000-0000-0000-0000-000000000000',
     '00000000-0000-0000-0000-000000000002',
+    'authenticated',
+    'authenticated',
     'trusted@kindscreen.dev',
     crypt('Password123!', gen_salt('bf')),
     now(), now(), now(),
     '{"provider":"email","providers":["email"]}',
-    '{"username":"trusted_bob"}',
-    false,
-    'authenticated'
+    '{"sub":"00000000-0000-0000-0000-000000000002","email":"trusted@kindscreen.dev","email_verified":true,"phone_verified":false}',
+    false, false, false,
+    '', '', '', '', '', ''
   ),
   -- regular reviewer
   (
+    '00000000-0000-0000-0000-000000000000',
     '00000000-0000-0000-0000-000000000003',
+    'authenticated',
+    'authenticated',
     'reviewer@kindscreen.dev',
     crypt('Password123!', gen_salt('bf')),
     now(), now(), now(),
     '{"provider":"email","providers":["email"]}',
-    '{"username":"reviewer_carol"}',
-    false,
-    'authenticated'
+    '{"sub":"00000000-0000-0000-0000-000000000003","email":"reviewer@kindscreen.dev","email_verified":true,"phone_verified":false}',
+    false, false, false,
+    '', '', '', '', '', ''
   )
 ON CONFLICT (id) DO NOTHING;
 
 -- Auth identities (required for email/password sign-in)
+-- provider_id must be the user UUID, not the email address.
 INSERT INTO auth.identities (
   id,
   user_id,
@@ -70,7 +94,7 @@ INSERT INTO auth.identities (
   (
     '00000000-0000-0000-0000-000000000001',
     '00000000-0000-0000-0000-000000000001',
-    '{"sub":"00000000-0000-0000-0000-000000000001","email":"admin@kindscreen.dev"}',
+    '{"sub":"00000000-0000-0000-0000-000000000001","email":"admin@kindscreen.dev","email_verified":true,"phone_verified":false}',
     'email',
     '00000000-0000-0000-0000-000000000001',
     now(), now(), now()
@@ -78,7 +102,7 @@ INSERT INTO auth.identities (
   (
     '00000000-0000-0000-0000-000000000002',
     '00000000-0000-0000-0000-000000000002',
-    '{"sub":"00000000-0000-0000-0000-000000000002","email":"trusted@kindscreen.dev"}',
+    '{"sub":"00000000-0000-0000-0000-000000000002","email":"trusted@kindscreen.dev","email_verified":true,"phone_verified":false}',
     'email',
     '00000000-0000-0000-0000-000000000002',
     now(), now(), now()
@@ -86,7 +110,7 @@ INSERT INTO auth.identities (
   (
     '00000000-0000-0000-0000-000000000003',
     '00000000-0000-0000-0000-000000000003',
-    '{"sub":"00000000-0000-0000-0000-000000000003","email":"reviewer@kindscreen.dev"}',
+    '{"sub":"00000000-0000-0000-0000-000000000003","email":"reviewer@kindscreen.dev","email_verified":true,"phone_verified":false}',
     'email',
     '00000000-0000-0000-0000-000000000003',
     now(), now(), now()
@@ -101,7 +125,12 @@ VALUES
   ('00000000-0000-0000-0000-000000000001', 'admin_alice',    true,  true,  true, 10),
   ('00000000-0000-0000-0000-000000000002', 'trusted_bob',    false, false, true,  5),
   ('00000000-0000-0000-0000-000000000003', 'reviewer_carol', false, false, false, 2)
-ON CONFLICT (id) DO NOTHING;
+ON CONFLICT (id) DO UPDATE SET
+  username     = EXCLUDED.username,
+  is_admin     = EXCLUDED.is_admin,
+  is_moderator = EXCLUDED.is_moderator,
+  is_trusted   = EXCLUDED.is_trusted,
+  review_count = EXCLUDED.review_count;
 
 -- ----------------------------------------------------------------
 -- Sample channels

@@ -73,10 +73,6 @@ export async function POST(request: NextRequest) {
     if (insertError.code === '23505') {
       return NextResponse.json({ error: 'You have already reviewed this video.' }, { status: 409 })
     }
-    // RLS rejection (trying to review own video)
-    if (insertError.code === '42501') {
-      return NextResponse.json({ error: 'You cannot review your own submission.' }, { status: 403 })
-    }
     return NextResponse.json({ error: insertError.message }, { status: 500 })
   }
 

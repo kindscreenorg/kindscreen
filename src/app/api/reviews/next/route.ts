@@ -24,7 +24,6 @@ export async function GET() {
     .from('videos')
     .select('id, youtube_id, title, thumbnail_url, category, age_band, created_at')
     .eq('status', 'pending')
-    .neq('submitted_by', user.id)
     .order('created_at', { ascending: true })
     .limit(1)
 

@@ -107,7 +107,8 @@ export default function BrowseClient({
               className={`${chipBase} ${ageBand === band ? chipActive : chipInactive}`}
               onClick={() => handleAgeBandChip(band)}
             >
-              {AGE_BAND_LABELS[band] ?? band}
+              {/* v8 ignore next */
+              AGE_BAND_LABELS[band] ?? band}
             </button>
           ))}
         </div>

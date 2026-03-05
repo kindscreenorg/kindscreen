@@ -1,4 +1,5 @@
 import { redirect } from 'next/navigation'
+import Link from 'next/link'
 import { createClient } from '@/lib/supabase/server'
 import FlaggedVideos from './FlaggedVideos'
 import type { FlaggedVideo, FlagItem } from './FlaggedVideos'
@@ -15,6 +16,10 @@ export default async function ModeratorDashboard() {
   ) as unknown as { data: boolean | null }
 
   if (!isMod) redirect('/reviewer')
+
+  const { data: isAdmin } = await (
+    supabase.rpc('is_admin')
+  ) as unknown as { data: boolean | null }
 
   // Fetch open flags with video details
   const { data: flagsRaw } = await (
@@ -69,13 +74,21 @@ export default async function ModeratorDashboard() {
 
   return (
     <div className="max-w-2xl mx-auto px-4 py-8">
-      <div className="mb-6">
-        <h1 className="font-heading text-2xl font-bold text-warm-700">Moderator Dashboard</h1>
-        <p className="text-sm text-warm-500 mt-1">
-          {flaggedVideos.length > 0
-            ? `${flaggedVideos.length} ${flaggedVideos.length === 1 ? 'video' : 'videos'} with open flags`
-            : 'No flagged videos'}
-        </p>
+      <div className="mb-6 flex items-start justify-between">
+        <div>
+          <h1 className="font-heading text-2xl font-bold text-warm-700">Moderator Dashboard</h1>
+          <p className="text-sm text-warm-500 mt-1">
+            {flaggedVideos.length > 0
+              ? `${flaggedVideos.length} ${flaggedVideos.length === 1 ? 'video' : 'videos'} with open flags`
+              : 'No flagged videos'}
+          </p>
+        </div>
+        <Link
+          href="/moderator/reviewers"
+          className="btn-secondary text-sm py-2 px-4 shrink-0"
+        >
+          {isAdmin ? 'Manage Reviewers' : 'View Reviewers'}
+        </Link>
       </div>
 
       <FlaggedVideos initialVideos={flaggedVideos} />

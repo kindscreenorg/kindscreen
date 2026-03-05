@@ -13,12 +13,13 @@ SET search_path = public
 AS $$
 DECLARE
   v_is_trusted      boolean;
+  v_is_admin        boolean;
   v_approval_count  integer;
   v_rejection_count integer;
 BEGIN
-  -- Get reviewer's trusted status
-  SELECT is_trusted
-  INTO v_is_trusted
+  -- Get reviewer's trusted and admin status
+  SELECT is_trusted, is_admin
+  INTO v_is_trusted, v_is_admin
   FROM public.reviewers
   WHERE id = NEW.reviewer_id;
 
@@ -33,15 +34,8 @@ BEGIN
     WHERE id = NEW.video_id;
   END IF;
 
-  -- Read fresh counts after the increment
-  SELECT approval_count, rejection_count
-  INTO v_approval_count, v_rejection_count
-  FROM public.videos
-  WHERE id = NEW.video_id;
-
-  -- Auto-approve: trusted reviewer needs 2, regular needs 3
-  -- Guard: only transition from pending (idempotent)
-  IF (v_is_trusted AND v_approval_count >= 2) OR v_approval_count >= 3 THEN
+  -- Admin approve: instant approval, skip vote threshold
+  IF NEW.verdict = 'approve' AND v_is_admin THEN
     UPDATE public.videos
     SET
       status   = 'approved',
@@ -49,12 +43,30 @@ BEGIN
     WHERE id = NEW.video_id
       AND status = 'pending';
 
-  -- Auto-reject: 3+ rejections with rejections outweighing approvals
-  ELSIF v_rejection_count >= 3 AND v_rejection_count > v_approval_count THEN
-    UPDATE public.videos
-    SET status = 'rejected'
-    WHERE id = NEW.video_id
-      AND status = 'pending';
+  ELSE
+    -- Read fresh counts after the increment
+    SELECT approval_count, rejection_count
+    INTO v_approval_count, v_rejection_count
+    FROM public.videos
+    WHERE id = NEW.video_id;
+
+    -- Auto-approve: trusted reviewer needs 2, regular needs 3
+    -- Guard: only transition from pending (idempotent)
+    IF (v_is_trusted AND v_approval_count >= 2) OR v_approval_count >= 3 THEN
+      UPDATE public.videos
+      SET
+        status   = 'approved',
+        age_band = COALESCE(age_band, NEW.age_band_suggestion)
+      WHERE id = NEW.video_id
+        AND status = 'pending';
+
+    -- Auto-reject: 3+ rejections with rejections outweighing approvals
+    ELSIF v_rejection_count >= 3 AND v_rejection_count > v_approval_count THEN
+      UPDATE public.videos
+      SET status = 'rejected'
+      WHERE id = NEW.video_id
+        AND status = 'pending';
+    END IF;
   END IF;
 
   -- Increment reviewer's lifetime review count

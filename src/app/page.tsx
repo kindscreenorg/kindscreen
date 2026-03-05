@@ -42,6 +42,9 @@ export default function HomePage() {
         <Link href="/donate" className="btn-secondary text-center">
           Support the project
         </Link>
+        <Link href="/login" className="btn-secondary text-center">
+          Log in
+        </Link>
       </div>
 
       {/* Disclaimer */}

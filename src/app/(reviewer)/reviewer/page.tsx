@@ -2,53 +2,8 @@ import { redirect } from 'next/navigation'
 import Link from 'next/link'
 import { createClient } from '@/lib/supabase/server'
 
-interface Badge {
-  id: string
-  emoji: string
-  label: string
-  description: string
-  earned: boolean
-}
-
-function computeBadges(reviewCount: number, isTrusted: boolean): Badge[] {
-  return [
-    {
-      id: 'first_review',
-      emoji: '🌱',
-      label: 'First Steps',
-      description: 'Submit your first review',
-      earned: reviewCount >= 1,
-    },
-    {
-      id: 'ten_reviews',
-      emoji: '🔟',
-      label: '10 Reviews',
-      description: 'Review 10 videos',
-      earned: reviewCount >= 10,
-    },
-    {
-      id: 'fifty_reviews',
-      emoji: '🏅',
-      label: '50 Reviews',
-      description: 'Review 50 videos',
-      earned: reviewCount >= 50,
-    },
-    {
-      id: 'century',
-      emoji: '💯',
-      label: 'Century',
-      description: 'Review 100 videos',
-      earned: reviewCount >= 100,
-    },
-    {
-      id: 'trusted',
-      emoji: '⭐',
-      label: 'Trusted Reviewer',
-      description: 'Earned through consistent, high-quality reviews',
-      earned: isTrusted,
-    },
-  ]
-}
+import { computeBadges } from '@/lib/utils/badges'
+import type { Badge } from '@/lib/utils/badges'
 
 export default async function ReviewerDashboard() {
   const supabase = await createClient()
@@ -60,7 +15,7 @@ export default async function ReviewerDashboard() {
   const { data: reviewer } = await (
     supabase
       .from('reviewers')
-      .select('username, review_count, reputation_score, is_trusted')
+      .select('username, review_count, reputation_score, is_trusted, is_moderator')
       .eq('id', user.id)
       .single()
   ) as unknown as {
@@ -69,6 +24,7 @@ export default async function ReviewerDashboard() {
       review_count: number
       reputation_score: number
       is_trusted: boolean
+      is_moderator: boolean
     } | null
   }
 
@@ -101,7 +57,6 @@ export default async function ReviewerDashboard() {
     .from('videos')
     .select('id', { count: 'exact', head: true })
     .eq('status', 'pending')
-    .neq('submitted_by', user.id)
   if (reviewedVideoIds.length > 0) {
     queueQuery = queueQuery.not('id', 'in', `(${reviewedVideoIds.join(',')})`)
   }
@@ -110,6 +65,7 @@ export default async function ReviewerDashboard() {
   const username = reviewer?.username ?? 'Reviewer'
   const reviewCount = reviewer?.review_count ?? 0
   const isTrusted = reviewer?.is_trusted ?? false
+  const isModerator = reviewer?.is_moderator ?? false
   const badges = computeBadges(reviewCount, isTrusted)
   const earnedBadges = badges.filter((b) => b.earned)
 
@@ -218,6 +174,15 @@ export default async function ReviewerDashboard() {
           Browse catalog
         </Link>
       </div>
+
+      {/* Moderator access */}
+      {isModerator && (
+        <div className="border-t border-warm-100 pt-4">
+          <Link href="/moderator" className="btn-secondary text-sm py-2 px-4 w-full text-center block">
+            Moderator Dashboard
+          </Link>
+        </div>
+      )}
 
     </div>
   )

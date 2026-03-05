@@ -39,7 +39,7 @@ export default function LoginForm() {
     }
 
     const next = searchParams.get('next')
-    const safeNext = next?.startsWith('/') ? next : '/'
+    const safeNext = next?.startsWith('/') ? next : '/reviewer'
     router.push(safeNext)
     router.refresh()
   }

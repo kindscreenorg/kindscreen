@@ -155,18 +155,12 @@ CREATE POLICY reviewers_update_moderator
 -- moderator: SELECT all + DELETE
 -- ================================================================
 
--- DB-level enforcement: cannot review a video you submitted
 CREATE POLICY reviews_insert_own
   ON public.reviews
   FOR INSERT
   WITH CHECK (
     public.is_reviewer()
     AND reviewer_id = auth.uid()
-    AND NOT EXISTS (
-      SELECT 1 FROM public.videos
-      WHERE id = video_id
-        AND submitted_by = auth.uid()
-    )
   );
 
 CREATE POLICY reviews_select_own
