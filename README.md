@@ -39,13 +39,14 @@ KindScreen's model is simple: **instead of trying to block bad content, only all
 | **Anonymous visitor** | Browse catalog, watch videos, flag content |
 | **Reviewer** | Submit videos, review others' submissions |
 | **Trusted Reviewer** | Same as reviewer — their approval counts as 1.5 votes |
-| **Moderator** | Override decisions, remove videos, manage reviewers |
+| **Moderator** | Override decisions, remove/restore any video directly, manage reviewers |
 | **Admin** | Full access |
 
 **Approval rules:**
 - 3 independent reviewer approvals → video enters catalog
 - 2 trusted reviewer approvals → video enters catalog
 - 3 flags on an approved video → suspended for moderator review
+- Moderators can reject any approved video directly via the All Videos page (`/moderator/videos`)
 
 Reviewers never see each other's verdicts until they've submitted their own — blind review prevents groupthink.
 
@@ -89,7 +90,7 @@ Humans always make the final call. AI is a filter and assistant, never a judge.
 
 ```bash
 # 1. Clone and install
-git clone https://github.com/kindscreen/kindscreen.git
+git clone https://github.com/kindscreenorg/kindscreen.git
 cd kindscreen
 npm install
 
@@ -122,6 +123,7 @@ Visit [http://localhost:3000](http://localhost:3000).
 npm run dev          # Start dev server (Turbopack)
 npm run type-check   # TypeScript — must be zero errors
 npm run lint         # ESLint — must be zero warnings
+npm run test:coverage  # Tests — must pass with 100% coverage
 npx supabase db reset              # Reset local DB + re-seed
 npx supabase gen types typescript --local > src/types/database.ts  # Regenerate types after schema changes
 ```

@@ -68,12 +68,15 @@ supabase/
 
 ### Before opening a pull request
 
-Run these and make sure both pass with zero errors:
+Run these and make sure all pass with zero errors:
 
 ```bash
 npm run type-check
 npm run lint
+npm run test:coverage
 ```
+
+The project maintains 100% test coverage — new code needs tests.
 
 Check the security checklist:
 - [ ] No API keys or secrets in any file
