@@ -11,7 +11,6 @@ const en = {
   },
   home: {
     tagline: 'A community-curated catalog of YouTube videos safe for children aged 3–12. Watched by real parents. Verified by consensus. Zero surprises.',
-    comingSoon: '🚧 Coming soon — we\'re building this in public',
     browseVideos: 'Browse Videos',
     becomeReviewer: 'Become a Reviewer',
     supportProject: 'Support the project',
@@ -217,7 +216,6 @@ const pt: typeof en = {
   },
   home: {
     tagline: 'Um catálogo curado pela comunidade de vídeos do YouTube seguros para crianças de 3 a 12 anos. Assistido por pais reais. Verificado por consenso. Zero surpresas.',
-    comingSoon: '🚧 Em breve — estamos construindo isso publicamente',
     browseVideos: 'Explorar Vídeos',
     becomeReviewer: 'Seja um Revisor',
     supportProject: 'Apoiar o projeto',

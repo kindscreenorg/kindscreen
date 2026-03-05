@@ -28,13 +28,6 @@ export default async function HomePage() {
         </p>
       </div>
 
-      {/* Status */}
-      <div className="card-warm inline-block mb-10 text-center">
-        <p className="text-sm text-warm-500 font-medium">
-          {t.home.comingSoon}
-        </p>
-      </div>
-
       {/* CTAs */}
       <div className="flex flex-col sm:flex-row gap-3 w-full max-w-xs sm:max-w-none sm:w-auto">
         <Link href="/browse" className="btn-primary text-center">
@@ -43,9 +36,9 @@ export default async function HomePage() {
         <Link href="/signup" className="btn-secondary text-center">
           {t.home.becomeReviewer}
         </Link>
-        <Link href="/donate" className="btn-secondary text-center">
+        <a href="https://github.com/sponsors/felipeamarante" target="_blank" rel="noopener noreferrer" className="btn-secondary text-center">
           {t.home.supportProject}
-        </Link>
+        </a>
         <Link href="/login" className="btn-secondary text-center">
           {t.home.login}
         </Link>

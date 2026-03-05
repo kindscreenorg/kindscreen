@@ -83,12 +83,20 @@ export default async function ModeratorDashboard() {
               : 'No flagged videos'}
           </p>
         </div>
-        <Link
-          href="/moderator/reviewers"
-          className="btn-secondary text-sm py-2 px-4 shrink-0"
-        >
-          {isAdmin ? 'Manage Reviewers' : 'View Reviewers'}
-        </Link>
+        <div className="flex gap-2 shrink-0">
+          <Link
+            href="/moderator/videos"
+            className="btn-secondary text-sm py-2 px-4"
+          >
+            All Videos
+          </Link>
+          <Link
+            href="/moderator/reviewers"
+            className="btn-secondary text-sm py-2 px-4"
+          >
+            {isAdmin ? 'Manage Reviewers' : 'View Reviewers'}
+          </Link>
+        </div>
       </div>
 
       <FlaggedVideos initialVideos={flaggedVideos} />
