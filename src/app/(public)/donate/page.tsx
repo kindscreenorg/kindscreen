@@ -1,8 +1,10 @@
 import { createAdminClient } from '@/lib/supabase/admin'
 import { progressPercent, MILESTONES } from '@/lib/utils/donation'
+import { getT } from '@/lib/i18n/server'
 
 export default async function DonatePage() {
   const supabase = createAdminClient()
+  const t = await getT()
 
   const [
     { count: approvedVideos },
@@ -28,11 +30,10 @@ export default async function DonatePage() {
       {/* Hero */}
       <div className="text-center space-y-3">
         <h1 className="font-heading text-3xl font-bold text-warm-800">
-          Help KindScreen grow
+          {t.donate.title}
         </h1>
         <p className="text-warm-500 text-base max-w-md mx-auto">
-          Every donation unlocks better tools for keeping kids safe online.
-          100% of funds go directly to running costs — no salaries, no overhead.
+          {t.donate.subtitle}
         </p>
         <a
           href="https://github.com/sponsors/kindscreen"
@@ -40,53 +41,53 @@ export default async function DonatePage() {
           rel="noopener noreferrer"
           className="btn-primary inline-block mt-2"
         >
-          Sponsor on GitHub ↗
+          {t.donate.sponsorGitHub}
         </a>
       </div>
 
       {/* Live stats */}
       <div>
         <h2 className="font-heading font-semibold text-warm-700 text-center mb-4">
-          Live numbers
+          {t.donate.liveNumbers}
         </h2>
         <div className="grid grid-cols-3 gap-3">
           <div className="card-warm text-center py-5">
             <p className="font-heading text-3xl font-bold text-warm-800">
               {approvedVideos ?? 0}
             </p>
-            <p className="text-xs text-warm-500 mt-1">Videos in catalog</p>
+            <p className="text-xs text-warm-500 mt-1">{t.donate.videosInCatalog}</p>
           </div>
           <div className="card-warm text-center py-5">
             <p className="font-heading text-3xl font-bold text-warm-800">
               {reviewerCount ?? 0}
             </p>
-            <p className="text-xs text-warm-500 mt-1">Parent reviewers</p>
+            <p className="text-xs text-warm-500 mt-1">{t.donate.parentReviewers}</p>
           </div>
           <div className="card-warm text-center py-5">
             <p className="font-heading text-3xl font-bold text-warm-800">
               {reviewCount ?? 0}
             </p>
-            <p className="text-xs text-warm-500 mt-1">Reviews submitted</p>
+            <p className="text-xs text-warm-500 mt-1">{t.donate.reviewsSubmitted}</p>
           </div>
         </div>
       </div>
 
       {/* Current funding */}
       <div className="card-warm text-center py-5">
-        <p className="text-warm-500 text-sm mb-1">Current monthly funding</p>
+        <p className="text-warm-500 text-sm mb-1">{t.donate.currentFunding}</p>
         <p className="font-heading text-4xl font-bold text-warm-800">
           €{monthlyDonation}
-          <span className="text-warm-400 text-xl font-normal"> / month</span>
+          <span className="text-warm-400 text-xl font-normal"> {t.donate.perMonth}</span>
         </p>
         <p className="text-xs text-warm-400 mt-2">
-          Updated manually — verified via{' '}
+          {t.donate.updatedManually}{' '}
           <a
             href="https://github.com/sponsors/kindscreen"
             target="_blank"
             rel="noopener noreferrer"
             className="underline hover:text-warm-600"
           >
-            GitHub Sponsors
+            {t.donate.gitHubSponsors}
           </a>
         </p>
       </div>
@@ -94,7 +95,7 @@ export default async function DonatePage() {
       {/* Milestones */}
       <div>
         <h2 className="font-heading font-semibold text-warm-700 mb-4">
-          Milestone roadmap
+          {t.donate.milestoneRoadmap}
         </h2>
         <div className="space-y-4">
           {milestones.map((milestone) => (
@@ -111,7 +112,7 @@ export default async function DonatePage() {
                     </p>
                     {milestone.reached && (
                       <span className="text-xs font-bold text-sage-600 bg-sage-100 border border-sage-200 rounded-full px-2 py-0.5">
-                        ✓ Reached
+                        {t.donate.reached}
                       </span>
                     )}
                   </div>
@@ -146,10 +147,9 @@ export default async function DonatePage() {
 
       {/* Transparency note */}
       <div className="bg-cream-100 border border-cream-200 rounded-2xl px-5 py-4 text-center space-y-1">
-        <p className="text-sm font-semibold text-warm-700">Built in public. 100% transparent.</p>
+        <p className="text-sm font-semibold text-warm-700">{t.donate.builtInPublic}</p>
         <p className="text-xs text-warm-500 leading-relaxed">
-          No VC. No ads. No selling data. KindScreen is funded by the community it serves.
-          Sponsorships are handled via GitHub Sponsors.
+          {t.donate.transparencyNote}
         </p>
       </div>
 

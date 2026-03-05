@@ -1,20 +1,22 @@
 import Link from 'next/link'
+import { getT } from '@/lib/i18n/server'
 
-export default function SignupConfirmPage() {
+export default async function SignupConfirmPage() {
+  const t = await getT()
+
   return (
     <div className="text-center py-2">
       <div className="text-4xl mb-4">📬</div>
       <h1 className="font-heading font-bold text-xl text-warm-800 mb-2">
-        Check your inbox
+        {t.signupConfirm.title}
       </h1>
       <p className="text-sm text-warm-500 mb-6 leading-relaxed">
-        We sent a confirmation link to your email address. Click the link to
-        activate your account — it expires in 24 hours.
+        {t.signupConfirm.body}
       </p>
       <p className="text-xs text-warm-400">
-        Didn&apos;t receive it?{' '}
+        {t.signupConfirm.noEmail}{' '}
         <Link href="/signup" className="text-peach font-semibold hover:underline">
-          Try signing up again
+          {t.signupConfirm.tryAgain}
         </Link>
       </p>
     </div>

@@ -3,10 +3,12 @@
 import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { createClient } from '@/lib/supabase/client'
+import { useT } from '@/lib/i18n/client'
 
 export default function ResetPasswordPage() {
   const router = useRouter()
   const supabase = createClient()
+  const t = useT()
 
   const [password, setPassword] = useState('')
   const [confirm, setConfirm] = useState('')
@@ -29,15 +31,15 @@ export default function ResetPasswordPage() {
     setError('')
 
     if (!password) {
-      setError('Please enter a new password.')
+      setError(t.resetPw.missingPassword)
       return
     }
     if (password.length < 8) {
-      setError('Password must be at least 8 characters.')
+      setError(t.resetPw.passwordTooShort)
       return
     }
     if (password !== confirm) {
-      setError('Passwords do not match.')
+      setError(t.resetPw.passwordMismatch)
       return
     }
 
@@ -46,7 +48,7 @@ export default function ResetPasswordPage() {
     setSubmitting(false)
 
     if (updateError) {
-      setError('Could not update password. Please request a new reset link.')
+      setError(t.resetPw.updateError)
       return
     }
 
@@ -56,7 +58,7 @@ export default function ResetPasswordPage() {
   if (!sessionChecked) {
     return (
       <div className="py-8 text-center text-warm-400 text-sm animate-pulse">
-        Verifying link…
+        {t.resetPw.verifyingLink}
       </div>
     )
   }
@@ -64,16 +66,16 @@ export default function ResetPasswordPage() {
   return (
     <>
       <h1 className="font-heading font-bold text-xl text-warm-800 mb-1">
-        Set new password
+        {t.resetPw.title}
       </h1>
       <p className="text-sm text-warm-500 mb-6">
-        Choose a strong password for your account.
+        {t.resetPw.subtitle}
       </p>
 
       <form onSubmit={handleSubmit} noValidate className="space-y-4">
         <div>
           <label htmlFor="password" className="block text-sm font-semibold text-warm-700 mb-1">
-            New password
+            {t.resetPw.newPassword}
           </label>
           <input
             id="password"
@@ -82,13 +84,13 @@ export default function ResetPasswordPage() {
             value={password}
             onChange={(e) => setPassword(e.target.value)}
             className="w-full px-4 py-2.5 rounded-xl border border-warm-200 bg-white text-warm-800 text-sm focus:outline-none focus:ring-2 focus:ring-peach focus:border-transparent placeholder:text-warm-300"
-            placeholder="At least 8 characters"
+            placeholder={t.resetPw.passwordPlaceholder}
           />
         </div>
 
         <div>
           <label htmlFor="confirm" className="block text-sm font-semibold text-warm-700 mb-1">
-            Confirm new password
+            {t.resetPw.confirmNewPassword}
           </label>
           <input
             id="confirm"
@@ -97,7 +99,7 @@ export default function ResetPasswordPage() {
             value={confirm}
             onChange={(e) => setConfirm(e.target.value)}
             className="w-full px-4 py-2.5 rounded-xl border border-warm-200 bg-white text-warm-800 text-sm focus:outline-none focus:ring-2 focus:ring-peach focus:border-transparent placeholder:text-warm-300"
-            placeholder="Repeat your new password"
+            placeholder={t.resetPw.confirmPlaceholder}
           />
         </div>
 
@@ -110,7 +112,7 @@ export default function ResetPasswordPage() {
           disabled={submitting}
           className="btn-primary w-full"
         >
-          {submitting ? 'Saving…' : 'Update password'}
+          {submitting ? t.resetPw.saving : t.resetPw.updatePassword}
         </button>
       </form>
     </>

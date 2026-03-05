@@ -1,6 +1,8 @@
 import type { Metadata, Viewport } from 'next'
 import { Nunito, Poppins } from 'next/font/google'
 import './globals.css'
+import { getLocale, getT } from '@/lib/i18n/server'
+import { LocaleProvider } from '@/lib/i18n/client'
 
 const nunito = Nunito({
   subsets: ['latin'],
@@ -32,15 +34,20 @@ export const viewport: Viewport = {
   initialScale: 1,
 }
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: {
   children: React.ReactNode
 }) {
+  const locale = await getLocale()
+  const t = await getT()
+
   return (
-    <html lang="en" className={`${nunito.variable} ${poppins.variable}`}>
+    <html lang={locale === 'pt' ? 'pt-BR' : 'en'} className={`${nunito.variable} ${poppins.variable}`}>
       <body className="bg-cream font-sans text-warm antialiased">
-        {children}
+        <LocaleProvider t={t}>
+          {children}
+        </LocaleProvider>
       </body>
     </html>
   )

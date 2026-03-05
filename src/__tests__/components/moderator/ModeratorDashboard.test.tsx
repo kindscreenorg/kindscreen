@@ -207,4 +207,27 @@ describe('ModeratorDashboard', () => {
     // No valid videos → shows "No flagged videos"
     expect(getByText(/no flagged videos/i)).toBeInTheDocument()
   })
+
+  it('shows "View Reviewers" link when user is a moderator but not an admin', async () => {
+    const nonAdminMod = {
+      auth: { getUser: vi.fn().mockResolvedValue({ data: { user: { id: 'mod-1' } }, error: null }) },
+      // First call is_moderator → true; second call is_admin → false
+      rpc: vi.fn()
+        .mockResolvedValueOnce({ data: true, error: null })
+        .mockResolvedValueOnce({ data: false, error: null }),
+      from: vi.fn().mockReturnValue({
+        select: vi.fn().mockReturnThis(),
+        eq: vi.fn().mockReturnThis(),
+        order: vi.fn().mockReturnThis(),
+        then: vi.fn().mockImplementation((resolve: (v: unknown) => void) => {
+          resolve({ data: [], error: null })
+          return Promise.resolve({ data: [], error: null })
+        }),
+      }),
+    }
+    mockCreateClient.mockResolvedValue(nonAdminMod)
+    const jsx = await ModeratorDashboard()
+    render(jsx)
+    expect(screen.getByRole('link', { name: /view reviewers/i })).toBeInTheDocument()
+  })
 })

@@ -2,8 +2,8 @@
 
 import { useState, useEffect, useCallback, useRef } from 'react'
 import { Constants } from '@/types/database'
-
 import { loadYTApi } from '@/lib/utils/youtube'
+import { useT } from '@/lib/i18n/client'
 
 type AgeBand = typeof Constants.public.Enums.age_band[number]
 
@@ -17,17 +17,11 @@ interface PendingVideo {
   created_at: string
 }
 
-const AGE_BAND_LABELS: Record<string, string> = {
-  '3-5': '3–5 years',
-  '6-9': '6–9 years',
-  '10-12': '10–12 years',
-}
-
 const QUESTIONS = [
-  { key: 'has_violence',      emoji: '👊', label: 'Any violence? (including cartoon)' },
-  { key: 'has_scary',        emoji: '😨', label: 'Any scary content?' },
-  { key: 'has_adult_themes', emoji: '🔞', label: 'Any adult themes?' },
-  { key: 'has_bad_language', emoji: '🤬', label: 'Any bad language?' },
+  { key: 'has_violence',      emoji: '👊' },
+  { key: 'has_scary',        emoji: '😨' },
+  { key: 'has_adult_themes', emoji: '🔞' },
+  { key: 'has_bad_language', emoji: '🤬' },
 ] as const
 
 type QuestionKey = typeof QUESTIONS[number]['key']
@@ -40,6 +34,7 @@ const DEFAULT_ANSWERS: Record<QuestionKey, boolean> = {
 }
 
 export default function ReviewPage() {
+  const t = useT()
   const [video, setVideo] = useState<PendingVideo | null | undefined>(undefined)
   const [loadingNext, setLoadingNext] = useState(true)
   const [answers, setAnswers] = useState<Record<QuestionKey, boolean>>(DEFAULT_ANSWERS)
@@ -132,23 +127,36 @@ export default function ReviewPage() {
 
       if (!res.ok) {
         const json = (await res.json()) as { error?: string }
-        setSubmitError(json.error ?? 'Something went wrong.')
+        setSubmitError(json.error ?? t.reviewPage.somethingWentWrong)
         return
       }
 
       await fetchNext()
     } catch {
-      setSubmitError('Could not reach the server. Please try again.')
+      setSubmitError(t.reviewPage.serverError)
     } finally {
       setSubmitting(false)
     }
+  }
+
+  const questionLabels: Record<QuestionKey, string> = {
+    has_violence: t.reviewPage.hasViolence,
+    has_scary: t.reviewPage.hasScary,
+    has_adult_themes: t.reviewPage.hasAdultThemes,
+    has_bad_language: t.reviewPage.hasBadLanguage,
+  }
+
+  const ageBandLabels: Record<string, string> = {
+    '3-5': t.reviewPage.ageBand35,
+    '6-9': t.reviewPage.ageBand69,
+    '10-12': t.reviewPage.ageBand1012,
   }
 
   // Loading state
   if (loadingNext && video === undefined) {
     return (
       <div className="flex items-center justify-center min-h-[60vh]">
-        <p className="text-warm-400 text-sm">Loading review queue…</p>
+        <p className="text-warm-400 text-sm">{t.reviewPage.loadingQueue}</p>
       </div>
     )
   }
@@ -159,13 +167,13 @@ export default function ReviewPage() {
       <div className="flex flex-col items-center justify-center min-h-[60vh] px-4 text-center">
         <div className="text-5xl mb-4">🎉</div>
         <h2 className="font-heading text-xl font-bold text-warm-700 mb-2">
-          Queue is empty!
+          {t.reviewPage.queueEmpty}
         </h2>
         <p className="text-sm text-warm-500 mb-6">
-          No pending videos to review right now. Check back later or submit a new video.
+          {t.reviewPage.queueEmptyBody}
         </p>
         <a href="/reviewer/submit" className="btn-primary">
-          + Submit a Video
+          {t.reviewPage.submitVideo}
         </a>
       </div>
     )
@@ -180,9 +188,9 @@ export default function ReviewPage() {
   return (
     <div className="max-w-2xl mx-auto px-4 py-8">
       <div className="mb-4 flex items-center justify-between">
-        <h1 className="font-heading text-2xl font-bold text-warm-700">Review Queue</h1>
+        <h1 className="font-heading text-2xl font-bold text-warm-700">{t.reviewPage.title}</h1>
         {loadingNext && (
-          <span className="text-xs text-warm-400">Loading next…</span>
+          <span className="text-xs text-warm-400">{t.reviewPage.loadingNext}</span>
         )}
       </div>
 
@@ -194,8 +202,8 @@ export default function ReviewPage() {
           {/* End-screen blocker — shown when video ends */}
           {videoEnded && (
             <div className="absolute inset-0 bg-black/85 flex flex-col items-center justify-center text-center p-6">
-              <p className="text-white font-heading font-bold text-lg mb-2">Video ended</p>
-              <p className="text-white/60 text-sm">Scroll down to complete your review ↓</p>
+              <p className="text-white font-heading font-bold text-lg mb-2">{t.reviewPage.videoEnded}</p>
+              <p className="text-white/60 text-sm">{t.reviewPage.videoEndedSub}</p>
             </div>
           )}
         </div>
@@ -210,8 +218,8 @@ export default function ReviewPage() {
 
         {/* Checklist */}
         <div className="card-warm space-y-3">
-          <p className="text-sm font-semibold text-warm-700 mb-1">Safety checklist</p>
-          {QUESTIONS.map(({ key, emoji, label }) => (
+          <p className="text-sm font-semibold text-warm-700 mb-1">{t.reviewPage.safetyChecklist}</p>
+          {QUESTIONS.map(({ key, emoji }) => (
             <button
               key={key}
               type="button"
@@ -223,7 +231,7 @@ export default function ReviewPage() {
               }`}
             >
               <span className="text-lg w-6 text-center">{emoji}</span>
-              <span className="flex-1 text-left">{label}</span>
+              <span className="flex-1 text-left">{questionLabels[key]}</span>
               <span className={`text-xs font-bold ${answers[key] ? 'text-rose-600' : 'text-warm-400'}`}>
                 {answers[key] ? 'YES' : 'NO'}
               </span>
@@ -234,7 +242,7 @@ export default function ReviewPage() {
         {/* Age band */}
         <div className="card-warm">
           <label className="block text-sm font-semibold text-warm-700 mb-2">
-            Age band suggestion <span className="font-normal text-warm-400">(optional)</span>
+            {t.reviewPage.ageBandSuggestion} <span className="font-normal text-warm-400">{t.reviewPage.optional}</span>
           </label>
           <div className="flex gap-2 flex-wrap">
             {Constants.public.Enums.age_band.map((band) => (
@@ -248,7 +256,8 @@ export default function ReviewPage() {
                     : 'bg-white border-warm-200 text-warm-700 hover:border-warm-300'
                 }`}
               >
-                {AGE_BAND_LABELS[band]}
+                {/* v8 ignore next */
+                ageBandLabels[band] ?? band}
               </button>
             ))}
           </div>
@@ -256,7 +265,7 @@ export default function ReviewPage() {
 
         {/* Verdict */}
         <div className="card-warm space-y-3">
-          <p className="text-sm font-semibold text-warm-700">Your verdict</p>
+          <p className="text-sm font-semibold text-warm-700">{t.reviewPage.yourVerdict}</p>
           <div className="grid grid-cols-2 gap-3">
             <button
               type="button"
@@ -267,7 +276,7 @@ export default function ReviewPage() {
                   : 'bg-white border-warm-200 text-warm-600 hover:border-sage-300'
               }`}
             >
-              ✓ Approve
+              {t.reviewPage.approve}
             </button>
             <button
               type="button"
@@ -278,20 +287,20 @@ export default function ReviewPage() {
                   : 'bg-white border-warm-200 text-warm-600 hover:border-rose-300'
               }`}
             >
-              ✕ Reject
+              {t.reviewPage.reject}
             </button>
           </div>
 
           {verdict === 'reject' && (
             <div>
               <label className="block text-xs font-semibold text-warm-600 mb-1">
-                What was the issue? <span className="font-normal text-warm-400">(optional)</span>
+                {t.reviewPage.rejectionReasonLabel} <span className="font-normal text-warm-400">{t.reviewPage.optional}</span>
               </label>
               <textarea
                 rows={2}
                 value={rejectionReason}
                 onChange={(e) => setRejectionReason(e.target.value)}
-                placeholder="Briefly describe why this video was rejected…"
+                placeholder={t.reviewPage.rejectionPlaceholder}
                 className="w-full px-4 py-2.5 rounded-xl border border-warm-200 bg-white text-warm-800 text-sm focus:outline-none focus:ring-2 focus:ring-peach focus:border-transparent placeholder:text-warm-300 resize-none"
               />
             </div>
@@ -308,7 +317,7 @@ export default function ReviewPage() {
           disabled={!canSubmit}
           className="btn-primary w-full text-base py-3"
         >
-          {submitting ? 'Submitting…' : 'Submit Review →'}
+          {submitting ? t.reviewPage.submitting : t.reviewPage.submitReview}
         </button>
       </div>
     </div>

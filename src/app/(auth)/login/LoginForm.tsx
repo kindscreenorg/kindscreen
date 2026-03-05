@@ -4,11 +4,13 @@ import { useState } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import Link from 'next/link'
 import { createClient } from '@/lib/supabase/client'
+import { useT } from '@/lib/i18n/client'
 
 export default function LoginForm() {
   const router = useRouter()
   const searchParams = useSearchParams()
   const supabase = createClient()
+  const t = useT()
 
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
@@ -22,7 +24,7 @@ export default function LoginForm() {
     e.preventDefault()
     setError('')
     if (!email || !password) {
-      setError('Please enter your email and password.')
+      setError(t.login.missingFields)
       return
     }
     setSubmitting(true)
@@ -34,7 +36,7 @@ export default function LoginForm() {
 
     if (authError) {
       // Never distinguish between bad email / bad password — prevents user enumeration
-      setError('Incorrect email or password.')
+      setError(t.login.incorrectCreds)
       return
     }
 
@@ -47,20 +49,20 @@ export default function LoginForm() {
   return (
     <>
       <h1 className="font-heading font-bold text-xl text-warm-800 mb-1">
-        Welcome back
+        {t.login.title}
       </h1>
-      <p className="text-sm text-warm-500 mb-6">Log in to your KindScreen account.</p>
+      <p className="text-sm text-warm-500 mb-6">{t.login.subtitle}</p>
 
       {callbackError && (
         <div className="mb-4 px-4 py-3 rounded-xl bg-rose-50 border border-rose-200 text-xs text-rose-600">
-          Something went wrong. Please try logging in again.
+          {t.login.callbackError}
         </div>
       )}
 
       <form onSubmit={handleSubmit} noValidate className="space-y-4">
         <div>
           <label htmlFor="email" className="block text-sm font-semibold text-warm-700 mb-1">
-            Email
+            {t.login.email}
           </label>
           <input
             id="email"
@@ -69,20 +71,20 @@ export default function LoginForm() {
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             className="w-full px-4 py-2.5 rounded-xl border border-warm-200 bg-white text-warm-800 text-sm focus:outline-none focus:ring-2 focus:ring-peach focus:border-transparent placeholder:text-warm-300"
-            placeholder="you@example.com"
+            placeholder={t.login.emailPlaceholder}
           />
         </div>
 
         <div>
           <div className="flex items-center justify-between mb-1">
             <label htmlFor="password" className="block text-sm font-semibold text-warm-700">
-              Password
+              {t.login.password}
             </label>
             <Link
               href="/forgot-password"
               className="text-xs text-peach hover:underline font-medium"
             >
-              Forgot password?
+              {t.login.forgotPassword}
             </Link>
           </div>
           <input
@@ -92,7 +94,7 @@ export default function LoginForm() {
             value={password}
             onChange={(e) => setPassword(e.target.value)}
             className="w-full px-4 py-2.5 rounded-xl border border-warm-200 bg-white text-warm-800 text-sm focus:outline-none focus:ring-2 focus:ring-peach focus:border-transparent placeholder:text-warm-300"
-            placeholder="Your password"
+            placeholder={t.login.passwordPlaceholder}
           />
         </div>
 
@@ -105,14 +107,14 @@ export default function LoginForm() {
           disabled={submitting}
           className="btn-primary w-full mt-2"
         >
-          {submitting ? 'Logging in…' : 'Log in'}
+          {submitting ? t.login.loggingIn : t.login.loginBtn}
         </button>
       </form>
 
       <p className="mt-5 text-center text-xs text-warm-500">
-        Don&apos;t have an account?{' '}
+        {t.login.noAccount}{' '}
         <Link href="/signup" className="text-peach font-semibold hover:underline">
-          Sign up
+          {t.login.signUp}
         </Link>
       </p>
     </>

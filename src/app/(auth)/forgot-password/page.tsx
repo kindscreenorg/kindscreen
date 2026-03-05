@@ -3,11 +3,13 @@
 import { useState } from 'react'
 import Link from 'next/link'
 import { createClient } from '@/lib/supabase/client'
+import { useT } from '@/lib/i18n/client'
 
 type State = 'idle' | 'submitting' | 'sent'
 
 export default function ForgotPasswordPage() {
   const supabase = createClient()
+  const t = useT()
   const [email, setEmail] = useState('')
   const [state, setState] = useState<State>('idle')
   const [error, setError] = useState('')
@@ -16,7 +18,7 @@ export default function ForgotPasswordPage() {
     e.preventDefault()
     setError('')
     if (!email) {
-      setError('Please enter your email address.')
+      setError(t.forgotPw.missingEmail)
       return
     }
     setState('submitting')
@@ -32,14 +34,14 @@ export default function ForgotPasswordPage() {
       <div className="text-center py-2">
         <div className="text-4xl mb-4">✉️</div>
         <h1 className="font-heading font-bold text-xl text-warm-800 mb-2">
-          Check your inbox
+          {t.forgotPw.sentTitle}
         </h1>
         <p className="text-sm text-warm-500 leading-relaxed">
-          If that email is registered, we sent you a password reset link.
+          {t.forgotPw.sentBody}
         </p>
         <p className="mt-6 text-xs text-warm-400">
           <Link href="/login" className="text-peach font-semibold hover:underline">
-            Back to log in
+            {t.forgotPw.backToLogin}
           </Link>
         </p>
       </div>
@@ -49,16 +51,16 @@ export default function ForgotPasswordPage() {
   return (
     <>
       <h1 className="font-heading font-bold text-xl text-warm-800 mb-1">
-        Forgot your password?
+        {t.forgotPw.title}
       </h1>
       <p className="text-sm text-warm-500 mb-6">
-        Enter your email and we&apos;ll send you a reset link.
+        {t.forgotPw.subtitle}
       </p>
 
       <form onSubmit={handleSubmit} noValidate className="space-y-4">
         <div>
           <label htmlFor="email" className="block text-sm font-semibold text-warm-700 mb-1">
-            Email
+            {t.forgotPw.email}
           </label>
           <input
             id="email"
@@ -67,7 +69,7 @@ export default function ForgotPasswordPage() {
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             className="w-full px-4 py-2.5 rounded-xl border border-warm-200 bg-white text-warm-800 text-sm focus:outline-none focus:ring-2 focus:ring-peach focus:border-transparent placeholder:text-warm-300"
-            placeholder="you@example.com"
+            placeholder={t.forgotPw.emailPlaceholder}
           />
           {error && <p className="mt-1 text-xs text-rose-500">{error}</p>}
         </div>
@@ -77,14 +79,14 @@ export default function ForgotPasswordPage() {
           disabled={state === 'submitting'}
           className="btn-primary w-full"
         >
-          {state === 'submitting' ? 'Sending…' : 'Send reset link'}
+          {state === 'submitting' ? t.forgotPw.sending : t.forgotPw.sendResetLink}
         </button>
       </form>
 
       <p className="mt-5 text-center text-xs text-warm-500">
-        Remembered it?{' '}
+        {t.forgotPw.rememberedIt}{' '}
         <Link href="/login" className="text-peach font-semibold hover:underline">
-          Log in
+          {t.forgotPw.login}
         </Link>
       </p>
     </>

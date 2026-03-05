@@ -4,6 +4,7 @@ import { useEffect, useRef, useState } from 'react'
 import Image from 'next/image'
 import { createClient } from '@/lib/supabase/client'
 import type { VideoWithChannel } from './page'
+import { useT } from '@/lib/i18n/client'
 
 interface VideoModalProps {
   video: VideoWithChannel | null
@@ -16,6 +17,7 @@ type FlagState = 'idle' | 'form' | 'submitting' | 'done' | 'error'
 import { loadYTApi } from '@/lib/utils/youtube'
 
 export default function VideoModal({ video, onClose, onVideoChange }: VideoModalProps) {
+  const t = useT()
   const playerRef = useRef<YTPlayer | null>(null)
   const [videoEnded, setVideoEnded] = useState(false)
   const [upNextVideos, setUpNextVideos] = useState<VideoWithChannel[]>([])
@@ -101,13 +103,13 @@ export default function VideoModal({ video, onClose, onVideoChange }: VideoModal
       })
       if (!res.ok) {
         const json = (await res.json()) as { error?: string }
-        setFlagError(json.error ?? 'Something went wrong.')
+        setFlagError(json.error ?? t.modal.somethingWentWrong)
         setFlagState('error')
         return
       }
       setFlagState('done')
     } catch {
-      setFlagError('Could not reach the server.')
+      setFlagError(t.modal.serverError)
       setFlagState('error')
     }
   }
@@ -139,7 +141,7 @@ export default function VideoModal({ video, onClose, onVideoChange }: VideoModal
           {videoEnded && (
             <div className="absolute inset-0 bg-black/90 flex flex-col items-center justify-center p-5">
               <p className="font-heading font-bold text-white text-lg mb-5">
-                Watch next on KindScreen
+                {t.modal.watchNext}
               </p>
 
               {upNextVideos.length > 0 ? (
@@ -170,7 +172,7 @@ export default function VideoModal({ video, onClose, onVideoChange }: VideoModal
                   ))}
                 </div>
               ) : (
-                <p className="text-white/40 text-sm">Loading suggestions…</p>
+                <p className="text-white/40 text-sm">{t.modal.loadingSuggestions}</p>
               )}
 
               <button
@@ -178,7 +180,7 @@ export default function VideoModal({ video, onClose, onVideoChange }: VideoModal
                 onClick={onClose}
                 className="mt-6 text-white/40 hover:text-white/70 text-xs transition-colors"
               >
-                Close
+                {t.modal.close}
               </button>
             </div>
           )}
@@ -197,18 +199,18 @@ export default function VideoModal({ video, onClose, onVideoChange }: VideoModal
               onClick={() => setFlagState('form')}
               className="text-xs text-white/40 hover:text-white/70 transition-colors"
             >
-              🚩 Report this video
+              {t.modal.reportVideo}
             </button>
           )}
 
           {(flagState === 'form' || flagState === 'error') && (
             <div className="bg-white/10 rounded-xl p-3 space-y-2">
-              <p className="text-white text-xs font-semibold">What&apos;s the issue?</p>
+              <p className="text-white text-xs font-semibold">{t.modal.whatsTheIssue}</p>
               <textarea
                 rows={2}
                 value={flagReason}
                 onChange={(e) => setFlagReason(e.target.value)}
-                placeholder="Describe why this video may not be appropriate for kids…"
+                placeholder={t.modal.reportPlaceholder}
                 className="w-full px-3 py-2 rounded-lg bg-white/20 text-white text-xs placeholder:text-white/40 focus:outline-none focus:ring-1 focus:ring-white/50 resize-none"
                 autoFocus
               />
@@ -219,7 +221,7 @@ export default function VideoModal({ video, onClose, onVideoChange }: VideoModal
                   onClick={() => { setFlagState('idle'); setFlagReason(''); setFlagError('') }}
                   className="text-xs text-white/50 hover:text-white/80 transition-colors"
                 >
-                  Cancel
+                  {t.modal.cancel}
                 </button>
                 <button
                   type="button"
@@ -227,19 +229,19 @@ export default function VideoModal({ video, onClose, onVideoChange }: VideoModal
                   disabled={!flagReason.trim()}
                   className="text-xs font-semibold text-white bg-rose-500 hover:bg-rose-600 disabled:opacity-50 px-3 py-1 rounded-lg transition-colors"
                 >
-                  Submit report
+                  {t.modal.submitReport}
                 </button>
               </div>
             </div>
           )}
 
           {flagState === 'submitting' && (
-            <p className="text-xs text-white/50">Submitting report…</p>
+            <p className="text-xs text-white/50">{t.modal.submittingReport}</p>
           )}
 
           {flagState === 'done' && (
             <p className="text-xs text-white/70">
-              ✓ Report submitted. Thank you for helping keep KindScreen safe.
+              {t.modal.reportSubmitted}
             </p>
           )}
         </div>

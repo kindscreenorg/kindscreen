@@ -1,12 +1,13 @@
 import { redirect } from 'next/navigation'
 import Link from 'next/link'
 import { createClient } from '@/lib/supabase/server'
-
+import { getT } from '@/lib/i18n/server'
 import { computeBadges } from '@/lib/utils/badges'
 import type { Badge } from '@/lib/utils/badges'
 
 export default async function ReviewerDashboard() {
   const supabase = await createClient()
+  const t = await getT()
 
   const { data: { user } } = await supabase.auth.getUser()
   if (!user) redirect('/login?next=/reviewer')
@@ -52,7 +53,7 @@ export default async function ReviewerDashboard() {
     impactCount = count ?? 0
   }
 
-  // Queue: pending videos not submitted by me and not already reviewed
+  // Queue: pending videos not already reviewed
   let queueQuery = supabase
     .from('videos')
     .select('id', { count: 'exact', head: true })
@@ -66,7 +67,7 @@ export default async function ReviewerDashboard() {
   const reviewCount = reviewer?.review_count ?? 0
   const isTrusted = reviewer?.is_trusted ?? false
   const isModerator = reviewer?.is_moderator ?? false
-  const badges = computeBadges(reviewCount, isTrusted)
+  const badges: Badge[] = computeBadges(reviewCount, isTrusted)
   const earnedBadges = badges.filter((b) => b.earned)
 
   return (
@@ -75,11 +76,11 @@ export default async function ReviewerDashboard() {
       {/* Welcome */}
       <div>
         <h1 className="font-heading text-2xl font-bold text-warm-700">
-          👋 Welcome back, {username}
+          {t.reviewerDashboard.welcomeBack.replace('{username}', username)}
         </h1>
         {isTrusted && (
           <span className="inline-flex items-center gap-1 mt-1 text-xs font-semibold text-amber-600 bg-amber-50 border border-amber-200 rounded-full px-3 py-0.5">
-            ⭐ Trusted Reviewer
+            {t.reviewerDashboard.trusted}
           </span>
         )}
       </div>
@@ -88,11 +89,11 @@ export default async function ReviewerDashboard() {
       {impactCount > 0 && (
         <div className="bg-sage-100 border border-sage-200 rounded-2xl px-5 py-4">
           <p className="text-sage-700 font-semibold text-sm">
-            🛡️ Your reviews have helped protect kids watching{' '}
-            <span className="text-lg font-bold">{impactCount}</span>{' '}
-            {impactCount === 1 ? 'approved video' : 'approved videos'}.
+            {t.reviewerDashboard.impactBanner
+              .replace('{count}', String(impactCount))
+              .replace('{videos}', impactCount === 1 ? t.reviewerDashboard.approvedVideo : t.reviewerDashboard.approvedVideos)}
           </p>
-          <p className="text-sage-600 text-xs mt-0.5">Thank you for keeping KindScreen safe.</p>
+          <p className="text-sage-600 text-xs mt-0.5">{t.reviewerDashboard.thankYou}</p>
         </div>
       )}
 
@@ -100,19 +101,19 @@ export default async function ReviewerDashboard() {
       <div className="grid grid-cols-3 gap-3">
         <div className="card-warm text-center">
           <p className="font-heading text-3xl font-bold text-warm-700">{reviewCount}</p>
-          <p className="text-xs text-warm-500 mt-1">Reviews done</p>
+          <p className="text-xs text-warm-500 mt-1">{t.reviewerDashboard.reviewsDone}</p>
         </div>
         <div className="card-warm text-center">
           <p className="font-heading text-3xl font-bold text-warm-700">
             {approvalRate !== null ? `${approvalRate}%` : '—'}
           </p>
-          <p className="text-xs text-warm-500 mt-1">Approval rate</p>
+          <p className="text-xs text-warm-500 mt-1">{t.reviewerDashboard.approvalRate}</p>
         </div>
         <div className="card-warm text-center">
           <p className="font-heading text-3xl font-bold text-warm-700">
             {reviewer?.reputation_score ?? 0}
           </p>
-          <p className="text-xs text-warm-500 mt-1">Reputation</p>
+          <p className="text-xs text-warm-500 mt-1">{t.reviewerDashboard.reputation}</p>
         </div>
       </div>
 
@@ -121,13 +122,15 @@ export default async function ReviewerDashboard() {
         <div>
           <p className="font-heading font-semibold text-warm-800">
             {queueCount
-              ? `${queueCount} ${queueCount === 1 ? 'video' : 'videos'} waiting for review`
-              : 'Queue is empty right now'}
+              ? t.reviewerDashboard.videosWaiting
+                  .replace('{count}', String(queueCount))
+                  .replace('{videos}', queueCount === 1 ? t.reviewerDashboard.video : t.reviewerDashboard.videos)
+              : t.reviewerDashboard.queueEmpty}
           </p>
           <p className="text-xs text-warm-400 mt-0.5">
             {queueCount
-              ? 'Each review brings a video one step closer to the catalog.'
-              : 'Check back later or submit a new video.'}
+              ? t.reviewerDashboard.queueCta
+              : t.reviewerDashboard.queueCtaEmpty}
           </p>
         </div>
         <Link
@@ -135,14 +138,14 @@ export default async function ReviewerDashboard() {
           className={`btn-primary shrink-0 text-sm py-2 px-4 ${!queueCount ? 'opacity-50 pointer-events-none' : ''}`}
           aria-disabled={!queueCount}
         >
-          Review now
+          {t.reviewerDashboard.reviewNow}
         </Link>
       </div>
 
       {/* Badges */}
       <div>
         <h2 className="font-heading font-semibold text-warm-700 mb-3">
-          Badges{earnedBadges.length > 0 && ` · ${earnedBadges.length}/${badges.length} earned`}
+          {t.reviewerDashboard.badges}{earnedBadges.length > 0 && ` · ${earnedBadges.length}/${badges.length} earned`}
         </h2>
         <div className="grid grid-cols-2 gap-3 sm:grid-cols-3">
           {badges.map((badge) => (
@@ -168,10 +171,10 @@ export default async function ReviewerDashboard() {
       {/* Quick links */}
       <div className="flex gap-3">
         <Link href="/reviewer/submit" className="btn-secondary text-sm py-2 px-4 flex-1 text-center">
-          + Submit a Video
+          {t.reviewerDashboard.submitVideo}
         </Link>
         <Link href="/browse" className="btn-secondary text-sm py-2 px-4 flex-1 text-center">
-          Browse catalog
+          {t.reviewerDashboard.browseCatalog}
         </Link>
       </div>
 
@@ -179,7 +182,7 @@ export default async function ReviewerDashboard() {
       {isModerator && (
         <div className="border-t border-warm-100 pt-4">
           <Link href="/moderator" className="btn-secondary text-sm py-2 px-4 w-full text-center block">
-            Moderator Dashboard
+            {t.reviewerDashboard.moderatorDashboard}
           </Link>
         </div>
       )}

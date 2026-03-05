@@ -15,16 +15,18 @@ describe('NotFound page', () => {
 })
 
 describe('HomePage', () => {
-  it('renders the landing page with browse and signup links', () => {
-    render(<HomePage />)
+  it('renders the landing page with browse and signup links', async () => {
+    const jsx = await HomePage()
+    render(jsx as React.ReactElement)
     expect(screen.getByRole('link', { name: /browse videos/i })).toBeInTheDocument()
     expect(screen.getByRole('link', { name: /become a reviewer/i })).toBeInTheDocument()
   })
 })
 
 describe('SignupConfirmPage', () => {
-  it('renders the email confirmation page', () => {
-    render(<SignupConfirmPage />)
+  it('renders the email confirmation page', async () => {
+    const jsx = await SignupConfirmPage()
+    render(jsx as React.ReactElement)
     expect(screen.getByText(/check your inbox/i)).toBeInTheDocument()
     expect(screen.getByText(/confirmation link/i)).toBeInTheDocument()
   })

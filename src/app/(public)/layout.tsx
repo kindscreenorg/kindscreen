@@ -1,10 +1,13 @@
 import Link from 'next/link'
 import Image from 'next/image'
 import { createClient } from '@/lib/supabase/server'
+import { getT } from '@/lib/i18n/server'
+import Footer from '@/components/Footer'
 
 export default async function PublicLayout({ children }: { children: React.ReactNode }) {
   const supabase = await createClient()
   const { data: { user } } = await supabase.auth.getUser()
+  const t = await getT()
 
   return (
     <>
@@ -15,16 +18,17 @@ export default async function PublicLayout({ children }: { children: React.React
         <div className="flex items-center gap-2">
           {user ? (
             <Link href="/reviewer" className="btn-secondary text-sm py-2 px-4">
-              Dashboard
+              {t.nav.dashboard}
             </Link>
           ) : (
             <Link href="/signup" className="btn-secondary text-sm py-2 px-4">
-              Become a Reviewer
+              {t.nav.becomeReviewer}
             </Link>
           )}
         </div>
       </nav>
       <main className="min-h-screen">{children}</main>
+      <Footer />
     </>
   )
 }

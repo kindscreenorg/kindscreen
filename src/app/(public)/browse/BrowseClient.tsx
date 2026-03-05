@@ -7,6 +7,7 @@ import { Constants } from '@/types/database'
 import type { VideoWithChannel } from './page'
 import VideoCard from './VideoCard'
 import VideoModal from './VideoModal'
+import { useT } from '@/lib/i18n/client'
 
 const AGE_BANDS = Constants.public.Enums.age_band
 const VIDEO_CATEGORIES = Constants.public.Enums.video_category
@@ -34,6 +35,7 @@ export default function BrowseClient({
 }: BrowseClientProps) {
   const router = useRouter()
   const searchParams = useSearchParams()
+  const t = useT()
 
   const [videos, setVideos] = useState<VideoWithChannel[]>(initialVideos)
   const [offset, setOffset] = useState(initialVideos.length)
@@ -99,7 +101,7 @@ export default function BrowseClient({
             className={`${chipBase} ${!ageBand ? chipActive : chipInactive}`}
             onClick={() => handleAgeBandChip(undefined)}
           >
-            All ages
+            {t.browse.allAges}
           </button>
           {AGE_BANDS.map((band) => (
             <button
@@ -118,7 +120,7 @@ export default function BrowseClient({
             className={`${chipBase} ${!category ? chipActive : chipInactive}`}
             onClick={() => handleCategoryChip(undefined)}
           >
-            All
+            {t.browse.all}
           </button>
           {VIDEO_CATEGORIES.map((cat) => (
             <button
@@ -137,12 +139,12 @@ export default function BrowseClient({
         {videos.length === 0 ? (
           <div className="text-center py-20">
             <div className="text-5xl mb-4">🎬</div>
-            <p className="text-warm-500 font-medium mb-4">No videos found for these filters.</p>
+            <p className="text-warm-500 font-medium mb-4">{t.browse.noVideos}</p>
             <button
               className="btn-secondary text-sm"
               onClick={() => router.push('/browse')}
             >
-              Clear filters
+              {t.browse.clearFilters}
             </button>
           </div>
         ) : (
@@ -164,7 +166,7 @@ export default function BrowseClient({
                   onClick={loadMore}
                   disabled={loading}
                 >
-                  {loading ? 'Loading…' : 'Load more'}
+                  {loading ? t.browse.loading : t.browse.loadMore}
                 </button>
               </div>
             )}

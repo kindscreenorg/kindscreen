@@ -4,12 +4,13 @@ import { useState, useRef } from 'react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import { createClient } from '@/lib/supabase/client'
-
 import { validate, USERNAME_REGEX } from '@/lib/utils/validate'
+import { useT } from '@/lib/i18n/client'
 
 export default function SignupPage() {
   const router = useRouter()
   const supabase = createClient()
+  const t = useT()
 
   const [email, setEmail] = useState('')
   const [username, setUsername] = useState('')
@@ -39,7 +40,7 @@ export default function SignupPage() {
       if (json.available === false) {
         setFieldErrors((prev) => ({
           ...prev,
-          username: 'That username is already taken.',
+          username: t.signup.usernameTaken,
         }))
       } else {
         setFieldErrors((prev) => {
@@ -66,7 +67,7 @@ export default function SignupPage() {
     if (usernameAvailable.current === false) {
       setFieldErrors((prev) => ({
         ...prev,
-        username: 'That username is already taken.',
+        username: t.signup.usernameTaken,
       }))
       return
     }
@@ -83,14 +84,14 @@ export default function SignupPage() {
 
     if (error) {
       if (error.message.includes('User already registered')) {
-        setSubmitError('An account with this email already exists.')
+        setSubmitError(t.signup.emailExists)
       } else if (error.message.toLowerCase().includes('username')) {
         setFieldErrors((prev) => ({
           ...prev,
-          username: 'That username is already taken.',
+          username: t.signup.usernameTaken,
         }))
       } else {
-        setSubmitError('Something went wrong. Please try again.')
+        setSubmitError(t.signup.somethingWentWrong)
       }
       return
     }
@@ -101,17 +102,17 @@ export default function SignupPage() {
   return (
     <>
       <h1 className="font-heading font-bold text-xl text-warm-800 mb-1">
-        Create your account
+        {t.signup.title}
       </h1>
       <p className="text-sm text-warm-500 mb-6">
-        Join KindScreen as a video reviewer.
+        {t.signup.subtitle}
       </p>
 
       <form onSubmit={handleSubmit} noValidate className="space-y-4">
         {/* Email */}
         <div>
           <label htmlFor="email" className="block text-sm font-semibold text-warm-700 mb-1">
-            Email
+            {t.signup.email}
           </label>
           <input
             id="email"
@@ -120,7 +121,7 @@ export default function SignupPage() {
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             className="w-full px-4 py-2.5 rounded-xl border border-warm-200 bg-white text-warm-800 text-sm focus:outline-none focus:ring-2 focus:ring-peach focus:border-transparent placeholder:text-warm-300"
-            placeholder="you@example.com"
+            placeholder={t.signup.emailPlaceholder}
           />
           {fieldErrors.email && (
             <p className="mt-1 text-xs text-rose-500">{fieldErrors.email}</p>
@@ -130,7 +131,7 @@ export default function SignupPage() {
         {/* Username */}
         <div>
           <label htmlFor="username" className="block text-sm font-semibold text-warm-700 mb-1">
-            Username
+            {t.signup.username}
           </label>
           <input
             id="username"
@@ -144,13 +145,13 @@ export default function SignupPage() {
             }}
             onBlur={(e) => checkUsername(e.target.value)}
             className="w-full px-4 py-2.5 rounded-xl border border-warm-200 bg-white text-warm-800 text-sm focus:outline-none focus:ring-2 focus:ring-peach focus:border-transparent placeholder:text-warm-300"
-            placeholder="cool_parent_42"
+            placeholder={t.signup.usernamePlaceholder}
           />
           {fieldErrors.username ? (
             <p className="mt-1 text-xs text-rose-500">{fieldErrors.username}</p>
           ) : (
             <p className="mt-1 text-xs text-warm-400">
-              3–30 chars: lowercase letters, numbers, underscores.
+              {t.signup.usernameHint}
             </p>
           )}
         </div>
@@ -158,7 +159,7 @@ export default function SignupPage() {
         {/* Password */}
         <div>
           <label htmlFor="password" className="block text-sm font-semibold text-warm-700 mb-1">
-            Password
+            {t.signup.password}
           </label>
           <input
             id="password"
@@ -167,7 +168,7 @@ export default function SignupPage() {
             value={password}
             onChange={(e) => setPassword(e.target.value)}
             className="w-full px-4 py-2.5 rounded-xl border border-warm-200 bg-white text-warm-800 text-sm focus:outline-none focus:ring-2 focus:ring-peach focus:border-transparent placeholder:text-warm-300"
-            placeholder="At least 8 characters"
+            placeholder={t.signup.passwordPlaceholder}
           />
           {fieldErrors.password && (
             <p className="mt-1 text-xs text-rose-500">{fieldErrors.password}</p>
@@ -177,7 +178,7 @@ export default function SignupPage() {
         {/* Confirm password */}
         <div>
           <label htmlFor="confirm" className="block text-sm font-semibold text-warm-700 mb-1">
-            Confirm password
+            {t.signup.confirmPassword}
           </label>
           <input
             id="confirm"
@@ -186,7 +187,7 @@ export default function SignupPage() {
             value={confirm}
             onChange={(e) => setConfirm(e.target.value)}
             className="w-full px-4 py-2.5 rounded-xl border border-warm-200 bg-white text-warm-800 text-sm focus:outline-none focus:ring-2 focus:ring-peach focus:border-transparent placeholder:text-warm-300"
-            placeholder="Repeat your password"
+            placeholder={t.signup.confirmPlaceholder}
           />
           {fieldErrors.confirm && (
             <p className="mt-1 text-xs text-rose-500">{fieldErrors.confirm}</p>
@@ -202,14 +203,14 @@ export default function SignupPage() {
           disabled={submitting}
           className="btn-primary w-full mt-2"
         >
-          {submitting ? 'Creating account…' : 'Create account'}
+          {submitting ? t.signup.creatingAccount : t.signup.createAccount}
         </button>
       </form>
 
       <p className="mt-5 text-center text-xs text-warm-500">
-        Already have an account?{' '}
+        {t.signup.alreadyHaveAccount}{' '}
         <Link href="/login" className="text-peach font-semibold hover:underline">
-          Log in
+          {t.signup.login}
         </Link>
       </p>
     </>

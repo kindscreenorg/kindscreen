@@ -3,6 +3,8 @@
 import { useState } from 'react'
 import Image from 'next/image'
 import { Constants } from '@/types/database'
+import { extractYoutubeId } from '@/lib/utils/youtube'
+import { useT } from '@/lib/i18n/client'
 
 const VIDEO_CATEGORIES = Constants.public.Enums.video_category
 const AGE_BANDS = Constants.public.Enums.age_band
@@ -19,9 +21,8 @@ const CATEGORY_LABELS: Record<string, string> = {
   other: 'Other',
 }
 
-import { extractYoutubeId } from '@/lib/utils/youtube'
-
 export default function SubmitPage() {
+  const t = useT()
   const [url, setUrl] = useState('')
   const [youtubeId, setYoutubeId] = useState('')
   const [title, setTitle] = useState('')
@@ -48,7 +49,7 @@ export default function SubmitPage() {
   async function fetchMetadata() {
     const id = extractYoutubeId(url)
     if (!id) {
-      setErrors({ url: 'Could not find a valid YouTube video ID.' })
+      setErrors({ url: t.submitPage.invalidUrl })
       return
     }
 
@@ -61,7 +62,7 @@ export default function SubmitPage() {
     try {
       const res = await fetch(`/api/videos/metadata?id=${id}`)
       if (!res.ok) {
-        setErrors({ url: 'Video not found on YouTube.' })
+        setErrors({ url: t.submitPage.videoNotFound })
         setFetching(false)
         return
       }
@@ -70,7 +71,7 @@ export default function SubmitPage() {
       setTitle(data.title)
       setThumbnailUrl(data.thumbnail_url ?? '')
     } catch {
-      setErrors({ url: 'Could not reach the server. Please try again.' })
+      setErrors({ url: t.submitPage.serverError })
     }
 
     setFetching(false)
@@ -82,9 +83,9 @@ export default function SubmitPage() {
 
     const newErrors: Record<string, string> = {}
     /* v8 ignore start */
-    if (!youtubeId) newErrors.url = 'Please enter a valid YouTube URL first.'
+    if (!youtubeId) newErrors.url = t.submitPage.pleaseEnterUrl
     /* v8 ignore stop */
-    if (!category) newErrors.category = 'Please select a category.'
+    if (!category) newErrors.category = t.submitPage.pleaseSelectCategory
     if (Object.keys(newErrors).length > 0) {
       setErrors(newErrors)
       return
@@ -106,22 +107,22 @@ export default function SubmitPage() {
       })
 
       if (res.status === 409) {
-        setSubmitError('This video is already in the catalog.')
+        setSubmitError(t.submitPage.alreadyInCatalog)
         setSubmitting(false)
         return
       }
 
       if (!res.ok) {
         const json = (await res.json()) as { error?: string }
-        setSubmitError(json.error ?? 'Something went wrong.')
+        setSubmitError(json.error ?? t.submitPage.somethingWentWrong)
         setSubmitting(false)
         return
       }
 
       resetForm()
-      setSuccessMessage('Video submitted! It will enter the review queue shortly.')
+      setSuccessMessage(t.submitPage.success)
     } catch {
-      setSubmitError('Could not reach the server. Please try again.')
+      setSubmitError(t.submitPage.serverError)
     }
 
     setSubmitting(false)
@@ -133,7 +134,7 @@ export default function SubmitPage() {
 
   return (
     <div className="max-w-xl mx-auto px-4 py-8">
-      <h1 className="font-heading text-2xl font-bold text-warm-700 mb-6">Submit a Video</h1>
+      <h1 className="font-heading text-2xl font-bold text-warm-700 mb-6">{t.submitPage.title}</h1>
 
       <div className="card-warm space-y-5">
         {successMessage && (
@@ -145,7 +146,7 @@ export default function SubmitPage() {
         {/* YouTube URL */}
         <div>
           <label htmlFor="url" className={labelClass}>
-            YouTube URL
+            {t.submitPage.youtubeUrl}
           </label>
           <input
             id="url"
@@ -160,10 +161,10 @@ export default function SubmitPage() {
             }}
             onBlur={fetchMetadata}
             className={inputClass}
-            placeholder="https://www.youtube.com/watch?v=..."
+            placeholder={t.submitPage.urlPlaceholder}
           />
           {fetching && (
-            <span className="text-xs text-warm-400 mt-1 block">Fetching video info…</span>
+            <span className="text-xs text-warm-400 mt-1 block">{t.submitPage.fetchingInfo}</span>
           )}
           {errors.url && (
             <p className="mt-1 text-xs text-rose-500">{errors.url}</p>
@@ -175,7 +176,7 @@ export default function SubmitPage() {
           <div className="relative aspect-video rounded-xl overflow-hidden bg-warm-100">
             <Image
               src={thumbnailUrl}
-              alt="Video thumbnail"
+              alt={t.submitPage.thumbnailAlt}
               fill
               className="object-cover"
               unoptimized
@@ -186,7 +187,7 @@ export default function SubmitPage() {
         {/* Title */}
         <div>
           <label htmlFor="title" className={labelClass}>
-            Title
+            {t.submitPage.titleField}
           </label>
           <input
             id="title"
@@ -194,14 +195,14 @@ export default function SubmitPage() {
             value={title}
             readOnly
             className="w-full px-4 py-2.5 rounded-xl border border-warm-200 bg-warm-50 text-warm-600 text-sm cursor-default select-none placeholder:text-warm-300"
-            placeholder="Auto-filled from YouTube"
+            placeholder={t.submitPage.titlePlaceholder}
           />
         </div>
 
         {/* Category */}
         <div>
           <label htmlFor="category" className={labelClass}>
-            Category <span className="text-rose-400">*</span>
+            {t.submitPage.category} <span className="text-rose-400">*</span>
           </label>
           <select
             id="category"
@@ -210,7 +211,7 @@ export default function SubmitPage() {
             disabled={!youtubeId}
             className={inputClass}
           >
-            <option value="">Select a category…</option>
+            <option value="">{t.submitPage.selectCategory}</option>
             {VIDEO_CATEGORIES.map((c) => (
               <option key={c} value={c}>
                 {/* v8 ignore next */
@@ -226,7 +227,7 @@ export default function SubmitPage() {
         {/* Age band */}
         <div>
           <label htmlFor="age-band" className={labelClass}>
-            Age Band <span className="text-warm-400 font-normal">(optional)</span>
+            {t.submitPage.ageBand} <span className="text-warm-400 font-normal">{t.submitPage.optional}</span>
           </label>
           <select
             id="age-band"
@@ -235,10 +236,10 @@ export default function SubmitPage() {
             disabled={!youtubeId}
             className={inputClass}
           >
-            <option value="">Not sure</option>
+            <option value="">{t.submitPage.notSure}</option>
             {AGE_BANDS.map((b) => (
               <option key={b} value={b}>
-                {b} years
+                {b} {t.submitPage.years}
               </option>
             ))}
           </select>
@@ -254,7 +255,7 @@ export default function SubmitPage() {
           disabled={submitting || !youtubeId}
           className="btn-primary w-full"
         >
-          {submitting ? 'Submitting…' : 'Submit for Review'}
+          {submitting ? t.submitPage.submitting : t.submitPage.submitBtn}
         </button>
       </div>
     </div>
