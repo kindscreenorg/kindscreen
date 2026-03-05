@@ -44,6 +44,16 @@ export default async function HomePage() {
         </Link>
       </div>
 
+      {/* GitHub link */}
+      <a
+        href="https://github.com/kindscreenorg/kindscreen"
+        target="_blank"
+        rel="noopener noreferrer"
+        className="mt-6 text-xs text-warm-400 hover:text-warm-600 transition-colors"
+      >
+        ★ Open source on GitHub
+      </a>
+
       {/* Disclaimer */}
       <p className="mt-16 text-xs text-warm-300 text-center max-w-sm leading-relaxed">
         {t.home.disclaimer}
