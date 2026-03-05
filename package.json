@@ -18,6 +18,9 @@
     "react": "^19.0.0",
     "react-dom": "^19.0.0"
   },
+  "overrides": {
+    "tar": ">=7.5.10"
+  },
   "devDependencies": {
     "@eslint/eslintrc": "^3.0.0",
     "@testing-library/jest-dom": "^6.9.1",
