@@ -19,11 +19,12 @@ export async function GET() {
 
   const reviewedIds = reviewed?.map((r) => r.video_id) ?? []
 
-  // Build query for next pending video
+  // Build query for next pending video (skip own submissions and already reviewed)
   let query = supabase
     .from('videos')
     .select('id, youtube_id, title, thumbnail_url, category, age_band, created_at')
     .eq('status', 'pending')
+    .neq('submitted_by', user.id)
     .order('created_at', { ascending: true })
     .limit(1)
 
