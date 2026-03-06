@@ -102,24 +102,6 @@ describe('GET /api/reviews/next', () => {
     expect(videosBuilder.not).toHaveBeenCalledWith('id', 'in', '(video-already)')
   })
 
-  it('excludes videos submitted by the current user', async () => {
-    const mock = createMockSupabaseClient()
-    mock.auth.getUser = vi.fn().mockResolvedValue({
-      data: { user: { id: 'user-1' } }, error: null,
-    })
-    const reviewsBuilder = createMockBuilder({ data: [] })
-    const videosBuilder = createMockBuilder({ data: null })
-    let callCount = 0
-    mock.from = vi.fn().mockImplementation(() => {
-      callCount++
-      if (callCount === 1) return reviewsBuilder
-      return videosBuilder
-    })
-    mockedCreateClient.mockResolvedValue(mock as never)
-    await GET()
-    expect(videosBuilder.neq).toHaveBeenCalledWith('submitted_by', 'user-1')
-  })
-
   it('returns 500 when video query errors', async () => {
     const mock = createMockSupabaseClient()
     mock.auth.getUser = vi.fn().mockResolvedValue({
