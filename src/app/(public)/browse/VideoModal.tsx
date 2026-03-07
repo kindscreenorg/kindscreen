@@ -60,6 +60,9 @@ export default function VideoModal({ video, onClose, onVideoChange }: VideoModal
         events: {
           onStateChange: (e) => {
             if (e.data === window.YT.PlayerState.ENDED) {
+              if (document.fullscreenElement) {
+                void document.exitFullscreen()
+              }
               setVideoEnded(true)
               void fetchUpNext(video.id)
             }

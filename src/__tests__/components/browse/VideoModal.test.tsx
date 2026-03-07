@@ -261,6 +261,25 @@ describe('VideoModal', () => {
     })
   })
 
+  it('calls exitFullscreen when video ends in fullscreen', async () => {
+    const mockExit = vi.fn().mockResolvedValue(undefined)
+    Object.defineProperty(document, 'fullscreenElement', { value: document.body, configurable: true })
+    Object.defineProperty(document, 'exitFullscreen', { value: mockExit, configurable: true })
+    render(<VideoModal video={makeVideo()} onClose={vi.fn()} />)
+    await act(async () => { capturedOnStateChange?.({ data: 0 }) })
+    expect(mockExit).toHaveBeenCalled()
+    Object.defineProperty(document, 'fullscreenElement', { value: null, configurable: true })
+  })
+
+  it('does not call exitFullscreen when video ends not in fullscreen', async () => {
+    const mockExit = vi.fn()
+    Object.defineProperty(document, 'fullscreenElement', { value: null, configurable: true })
+    Object.defineProperty(document, 'exitFullscreen', { value: mockExit, configurable: true })
+    render(<VideoModal video={makeVideo()} onClose={vi.fn()} />)
+    await act(async () => { capturedOnStateChange?.({ data: 0 }) })
+    expect(mockExit).not.toHaveBeenCalled()
+  })
+
   it('ignores non-ENDED YT player state changes', async () => {
     // Covers the false branch of `if (e.data === window.YT.PlayerState.ENDED)`
     render(<VideoModal video={makeVideo()} onClose={vi.fn()} />)
