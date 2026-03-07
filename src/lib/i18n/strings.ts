@@ -24,6 +24,8 @@ const en = {
     clearFilters: 'Clear filters',
     loadMore: 'Load more',
     loading: 'Loading…',
+    searchPlaceholder: 'Search videos…',
+    noSearchResults: 'No videos found for "{query}".',
   },
   modal: {
     watchNext: 'Watch next on KindScreen',
@@ -229,6 +231,8 @@ const pt: typeof en = {
     clearFilters: 'Limpar filtros',
     loadMore: 'Carregar mais',
     loading: 'Carregando…',
+    searchPlaceholder: 'Buscar vídeos…',
+    noSearchResults: 'Nenhum vídeo encontrado para "{query}".',
   },
   modal: {
     watchNext: 'Assista a seguir no KindScreen',

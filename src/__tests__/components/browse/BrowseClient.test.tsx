@@ -1,5 +1,5 @@
-import { describe, it, expect, vi, beforeEach } from 'vitest'
-import { render, screen, waitFor, fireEvent } from '@testing-library/react'
+import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest'
+import { render, screen, waitFor, fireEvent, act } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import React from 'react'
 import type { VideoWithChannel } from '@/app/(public)/browse/page'
@@ -27,6 +27,7 @@ Object.defineProperty(window, 'YT', {
 })
 
 const mockSupabaseFrom = vi.fn()
+const mockTextSearch = vi.fn()
 vi.mock('@/lib/supabase/client', () => ({
   createClient: () => ({
     from: mockSupabaseFrom,
@@ -56,16 +57,29 @@ function makeVideo(id: string, overrides: Partial<VideoWithChannel> = {}): Video
 
 const videos = [makeVideo('1'), makeVideo('2'), makeVideo('3')]
 
+function makeChainable(overrides: Record<string, unknown> = {}) {
+  const builder: Record<string, unknown> = {}
+  for (const m of ['select', 'eq', 'neq', 'order', 'range', 'limit', 'in', 'not']) {
+    builder[m] = vi.fn().mockReturnThis()
+  }
+  builder.textSearch = mockTextSearch.mockReturnThis()
+  builder.then = vi.fn().mockImplementation(
+    (resolve: (v: { data: unknown[] }) => void) =>
+      Promise.resolve({ data: [] }).then(resolve)
+  )
+  return { ...builder, ...overrides }
+}
+
 describe('BrowseClient', () => {
   beforeEach(() => {
     vi.clearAllMocks()
-    mockSupabaseFrom.mockReturnValue({
-      select: vi.fn().mockReturnThis(),
-      eq: vi.fn().mockReturnThis(),
-      neq: vi.fn().mockReturnThis(),
-      order: vi.fn().mockReturnThis(),
+    mockSupabaseFrom.mockReturnValue(makeChainable({
       range: vi.fn().mockResolvedValue({ data: [] }),
-    })
+    }))
+  })
+
+  afterEach(() => {
+    vi.useRealTimers()
   })
 
   it('renders all initial videos', () => {
@@ -269,5 +283,169 @@ describe('BrowseClient', () => {
     await waitFor(() => {
       expect(document.querySelector('.fixed.inset-0')).toBeNull()
     })
+  })
+
+  // --- Search tests ---
+
+  it('renders the search input', () => {
+    render(<BrowseClient initialVideos={videos} totalCount={3} pageSize={12} />)
+    expect(screen.getByPlaceholderText(/search videos/i)).toBeInTheDocument()
+  })
+
+  it('debounce: rapid typing fires only one query after 350ms', async () => {
+    vi.useFakeTimers()
+
+    const thenFn = vi.fn().mockImplementation(
+      (resolve: (v: { data: VideoWithChannel[] }) => void) =>
+        Promise.resolve({ data: [] }).then(resolve)
+    )
+    mockSupabaseFrom.mockReturnValue({ ...makeChainable(), then: thenFn })
+
+    render(<BrowseClient initialVideos={videos} totalCount={3} pageSize={12} />)
+    const input = screen.getByPlaceholderText(/search videos/i)
+
+    // Change value — debounce not yet fired
+    fireEvent.change(input, { target: { value: 'ki' } })
+    expect(thenFn).not.toHaveBeenCalled()
+
+    // Advance past debounce, flushes promises too
+    await act(async () => { await vi.advanceTimersByTimeAsync(400) })
+    expect(thenFn).toHaveBeenCalledTimes(1)
+  })
+
+  it('search results replace the grid after debounce fires', async () => {
+    vi.useFakeTimers()
+
+    const searchVideos = [makeVideo('99', { title: 'Kindness for Kids' })]
+    const thenFn = vi.fn().mockImplementation(
+      (resolve: (v: { data: VideoWithChannel[] }) => void) =>
+        Promise.resolve({ data: searchVideos }).then(resolve)
+    )
+    mockSupabaseFrom.mockReturnValue({ ...makeChainable(), then: thenFn })
+
+    render(<BrowseClient initialVideos={videos} totalCount={3} pageSize={12} />)
+    const input = screen.getByPlaceholderText(/search videos/i)
+
+    fireEvent.change(input, { target: { value: 'kindness' } })
+    await act(async () => { await vi.advanceTimersByTimeAsync(400) })
+
+    expect(screen.getByText('Kindness for Kids')).toBeInTheDocument()
+    expect(screen.queryByText('Video 1')).not.toBeInTheDocument()
+  })
+
+  it('clearing search restores the initial grid', async () => {
+    vi.useFakeTimers()
+
+    const searchVideos = [makeVideo('99', { title: 'Kindness for Kids' })]
+    const thenFn = vi.fn().mockImplementation(
+      (resolve: (v: { data: VideoWithChannel[] }) => void) =>
+        Promise.resolve({ data: searchVideos }).then(resolve)
+    )
+    mockSupabaseFrom.mockReturnValue({ ...makeChainable(), then: thenFn })
+
+    render(<BrowseClient initialVideos={videos} totalCount={3} pageSize={12} />)
+    const input = screen.getByPlaceholderText(/search videos/i)
+
+    // Type, wait for results
+    fireEvent.change(input, { target: { value: 'kindness' } })
+    await act(async () => { await vi.advanceTimersByTimeAsync(400) })
+    expect(screen.getByText('Kindness for Kids')).toBeInTheDocument()
+
+    // Clear input
+    fireEvent.change(input, { target: { value: '' } })
+    await act(async () => { await vi.advanceTimersByTimeAsync(400) })
+
+    expect(screen.getByText('Video 1')).toBeInTheDocument()
+    expect(screen.queryByText('Kindness for Kids')).not.toBeInTheDocument()
+  })
+
+  it('shows noSearchResults message with the query interpolated', async () => {
+    vi.useFakeTimers()
+
+    const thenFn = vi.fn().mockImplementation(
+      (resolve: (v: { data: VideoWithChannel[] }) => void) =>
+        Promise.resolve({ data: [] }).then(resolve)
+    )
+    mockSupabaseFrom.mockReturnValue({ ...makeChainable(), then: thenFn })
+
+    render(<BrowseClient initialVideos={videos} totalCount={3} pageSize={12} />)
+    const input = screen.getByPlaceholderText(/search videos/i)
+
+    fireEvent.change(input, { target: { value: 'xyznotfound' } })
+    await act(async () => { await vi.advanceTimersByTimeAsync(400) })
+
+    expect(screen.getByText(/xyznotfound/)).toBeInTheDocument()
+  })
+
+  it('hides Load More when search is active', async () => {
+    vi.useFakeTimers()
+
+    const thenFn = vi.fn().mockImplementation(
+      (resolve: (v: { data: VideoWithChannel[] }) => void) =>
+        Promise.resolve({ data: [makeVideo('99')] }).then(resolve)
+    )
+    mockSupabaseFrom.mockReturnValue({ ...makeChainable(), then: thenFn })
+
+    render(<BrowseClient initialVideos={videos} totalCount={100} pageSize={3} />)
+    // Load More should be visible initially
+    expect(screen.getByRole('button', { name: /load more/i })).toBeInTheDocument()
+
+    const input = screen.getByPlaceholderText(/search videos/i)
+    fireEvent.change(input, { target: { value: 'something' } })
+    await act(async () => { await vi.advanceTimersByTimeAsync(400) })
+
+    expect(screen.queryByRole('button', { name: /load more/i })).not.toBeInTheDocument()
+  })
+
+  it('handles null data from search gracefully (data ?? [] fallback)', async () => {
+    vi.useFakeTimers()
+
+    const thenFn = vi.fn().mockImplementation(
+      (resolve: (v: { data: null }) => void) =>
+        Promise.resolve({ data: null }).then(resolve)
+    )
+    mockSupabaseFrom.mockReturnValue({ ...makeChainable(), then: thenFn })
+
+    render(<BrowseClient initialVideos={videos} totalCount={3} pageSize={12} />)
+    const input = screen.getByPlaceholderText(/search videos/i)
+
+    fireEvent.change(input, { target: { value: 'fallback' } })
+    await act(async () => { await vi.advanceTimersByTimeAsync(400) })
+
+    // No crash — shows empty search state
+    expect(screen.getByText(/fallback/)).toBeInTheDocument()
+  })
+
+  it('active filters compose with search (eq called for category + age_band)', async () => {
+    vi.useFakeTimers()
+
+    const eqCalls: [string, unknown][] = []
+    const chainable = makeChainable()
+    const eqFn = vi.fn().mockImplementation((...args: unknown[]) => {
+      eqCalls.push(args as [string, unknown])
+      return chainable
+    })
+    chainable.eq = eqFn
+    chainable.then = vi.fn().mockImplementation(
+      (resolve: (v: { data: VideoWithChannel[] }) => void) =>
+        Promise.resolve({ data: [] }).then(resolve)
+    )
+    mockSupabaseFrom.mockReturnValue(chainable)
+
+    render(
+      <BrowseClient
+        initialVideos={videos}
+        totalCount={3}
+        pageSize={12}
+        category="educational"
+        ageBand="3-5"
+      />
+    )
+    const input = screen.getByPlaceholderText(/search videos/i)
+    fireEvent.change(input, { target: { value: 'science' } })
+    await act(async () => { await vi.advanceTimersByTimeAsync(400) })
+
+    expect(eqCalls.some(([k, v]) => k === 'category' && v === 'educational')).toBe(true)
+    expect(eqCalls.some(([k, v]) => k === 'age_band' && v === '3-5')).toBe(true)
   })
 })
