@@ -4,11 +4,15 @@ import type { Database } from '@/types/database'
 
 type VideoCategory = Database['public']['Enums']['video_category']
 type AgeBand = Database['public']['Enums']['age_band']
+type VideoLanguage = Database['public']['Enums']['video_language']
 
 const VIDEO_CATEGORIES: VideoCategory[] = [
   'educational', 'music', 'stories', 'science', 'art', 'nature', 'sports', 'games', 'other',
 ]
 const AGE_BANDS: AgeBand[] = ['3-5', '6-9', '10-12']
+const VIDEO_LANGUAGES: VideoLanguage[] = [
+  'english', 'portuguese', 'spanish', 'french', 'german', 'japanese', 'korean', 'other',
+]
 
 export async function POST(request: NextRequest) {
   const supabase = await createClient()
@@ -25,20 +29,25 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: 'Invalid request body.' }, { status: 400 })
   }
 
-  const { youtube_id, title, category, age_band, thumbnail_url } = body as {
+  const { youtube_id, title, category, language, age_band, thumbnail_url } = body as {
     youtube_id?: string
     title?: string
     category?: string
+    language?: string
     age_band?: string
     thumbnail_url?: string
   }
 
-  if (!youtube_id || !title || !category) {
-    return NextResponse.json({ error: 'youtube_id, title, and category are required.' }, { status: 400 })
+  if (!youtube_id || !title || !category || !language) {
+    return NextResponse.json({ error: 'youtube_id, title, category, and language are required.' }, { status: 400 })
   }
 
   if (!VIDEO_CATEGORIES.includes(category as VideoCategory)) {
     return NextResponse.json({ error: 'Invalid category.' }, { status: 400 })
+  }
+
+  if (!VIDEO_LANGUAGES.includes(language as VideoLanguage)) {
+    return NextResponse.json({ error: 'Invalid language.' }, { status: 400 })
   }
 
   if (age_band && !AGE_BANDS.includes(age_band as AgeBand)) {
@@ -62,6 +71,7 @@ export async function POST(request: NextRequest) {
       youtube_id,
       title,
       category: category as VideoCategory,
+      language: language as VideoLanguage,
       age_band: (age_band as AgeBand | undefined) ?? null,
       thumbnail_url: thumbnail_url ?? null,
       submitted_by: user.id,

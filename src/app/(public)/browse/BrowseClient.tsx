@@ -11,11 +11,23 @@ import { useT } from '@/lib/i18n/client'
 
 const AGE_BANDS = Constants.public.Enums.age_band
 const VIDEO_CATEGORIES = Constants.public.Enums.video_category
+const VIDEO_LANGUAGES = Constants.public.Enums.video_language
 
 const AGE_BAND_LABELS: Record<string, string> = {
   '3-5': '3–5',
   '6-9': '6–9',
   '10-12': '10–12',
+}
+
+const LANGUAGE_LABELS: Record<string, string> = {
+  english: 'English',
+  portuguese: 'Português',
+  spanish: 'Español',
+  french: 'Français',
+  german: 'Deutsch',
+  japanese: '日本語',
+  korean: '한국어',
+  other: 'Other',
 }
 
 interface BrowseClientProps {
@@ -24,6 +36,7 @@ interface BrowseClientProps {
   pageSize: number
   category?: typeof VIDEO_CATEGORIES[number]
   ageBand?: typeof AGE_BANDS[number]
+  language?: typeof VIDEO_LANGUAGES[number]
 }
 
 export default function BrowseClient({
@@ -32,6 +45,7 @@ export default function BrowseClient({
   pageSize,
   category,
   ageBand,
+  language,
 }: BrowseClientProps) {
   const router = useRouter()
   const searchParams = useSearchParams()
@@ -75,16 +89,18 @@ export default function BrowseClient({
       .limit(20)
     if (category) query = query.eq('category', category)
     if (ageBand) query = query.eq('age_band', ageBand)
+    if (language) query = query.eq('language', language)
     query.then(({ data }) => {
       setSearchResults((data ?? []) as VideoWithChannel[])
     })
-  }, [debouncedQuery, category, ageBand])
+  }, [debouncedQuery, category, ageBand, language])
 
   const buildUrl = useCallback(
-    (nextCategory?: string, nextAgeBand?: string) => {
+    (nextCategory?: string, nextAgeBand?: string, nextLanguage?: string) => {
       const params = new URLSearchParams()
       if (nextCategory) params.set('category', nextCategory)
       if (nextAgeBand) params.set('age_band', nextAgeBand)
+      if (nextLanguage) params.set('language', nextLanguage)
       const qs = params.toString()
       return `/browse${qs ? `?${qs}` : ''}`
     },
@@ -92,11 +108,15 @@ export default function BrowseClient({
   )
 
   const handleCategoryChip = (cat?: typeof VIDEO_CATEGORIES[number]) => {
-    router.push(buildUrl(cat, ageBand))
+    router.push(buildUrl(cat, ageBand, language))
   }
 
   const handleAgeBandChip = (band?: typeof AGE_BANDS[number]) => {
-    router.push(buildUrl(category, band))
+    router.push(buildUrl(category, band, language))
+  }
+
+  const handleLanguageChip = (lang?: typeof VIDEO_LANGUAGES[number]) => {
+    router.push(buildUrl(category, ageBand, lang))
   }
 
   const loadMore = async () => {
@@ -110,6 +130,7 @@ export default function BrowseClient({
       .range(offset, offset + pageSize - 1)
     if (category) query = query.eq('category', category)
     if (ageBand) query = query.eq('age_band', ageBand)
+    if (language) query = query.eq('language', language)
     const { data } = await query
     setVideos((prev) => [...prev, ...((data ?? []) as VideoWithChannel[])])
     setOffset((prev) => prev + pageSize)
@@ -172,6 +193,25 @@ export default function BrowseClient({
               onClick={() => handleCategoryChip(cat)}
             >
               <span className="capitalize">{cat}</span>
+            </button>
+          ))}
+        </div>
+        {/* Languages */}
+        <div className="flex gap-2 overflow-x-auto pb-1 scrollbar-none">
+          <button
+            className={`${chipBase} ${!language ? chipActive : chipInactive}`}
+            onClick={() => handleLanguageChip(undefined)}
+          >
+            {t.browse.allLanguages}
+          </button>
+          {VIDEO_LANGUAGES.map((lang) => (
+            <button
+              key={lang}
+              className={`${chipBase} ${language === lang ? chipActive : chipInactive}`}
+              onClick={() => handleLanguageChip(lang)}
+            >
+              {/* v8 ignore next */
+              LANGUAGE_LABELS[lang] ?? lang}
             </button>
           ))}
         </div>

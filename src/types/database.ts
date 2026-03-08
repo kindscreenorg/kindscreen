@@ -216,6 +216,7 @@ export type Database = {
           channel_id: string | null
           created_at: string
           id: string
+          language: Database["public"]["Enums"]["video_language"]
           rejection_count: number
           status: Database["public"]["Enums"]["video_status"]
           submitted_by: string | null
@@ -231,6 +232,7 @@ export type Database = {
           channel_id?: string | null
           created_at?: string
           id?: string
+          language?: Database["public"]["Enums"]["video_language"]
           rejection_count?: number
           status?: Database["public"]["Enums"]["video_status"]
           submitted_by?: string | null
@@ -246,6 +248,7 @@ export type Database = {
           channel_id?: string | null
           created_at?: string
           id?: string
+          language?: Database["public"]["Enums"]["video_language"] | null
           rejection_count?: number
           status?: Database["public"]["Enums"]["video_status"]
           submitted_by?: string | null
@@ -286,6 +289,15 @@ export type Database = {
         | "nature"
         | "sports"
         | "games"
+        | "other"
+      video_language:
+        | "english"
+        | "portuguese"
+        | "spanish"
+        | "french"
+        | "german"
+        | "japanese"
+        | "korean"
         | "other"
       video_status: "pending" | "approved" | "rejected"
     }
@@ -431,6 +443,16 @@ export const Constants = {
         "games",
         "other",
       ],
+      video_language: [
+        "english",
+        "portuguese",
+        "spanish",
+        "french",
+        "german",
+        "japanese",
+        "korean",
+        "other",
+      ] as const,
       video_status: ["pending", "approved", "rejected"],
     },
   },

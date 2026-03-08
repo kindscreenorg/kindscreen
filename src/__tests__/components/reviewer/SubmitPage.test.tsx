@@ -81,6 +81,12 @@ describe('SubmitPage', () => {
   // would trigger a second real blur on the URL input, calling fetchMetadata() again
   // and consuming mock responses meant for the submit call.
 
+  it('shows language select disabled before metadata fetch', () => {
+    render(<SubmitPage />)
+    const languageSelect = screen.getByLabelText(/language/i) as HTMLSelectElement
+    expect(languageSelect).toBeDisabled()
+  })
+
   it('shows category validation error when submitting without category', async () => {
     mockFetch.mockResolvedValueOnce({
       ok: true,
@@ -98,6 +104,23 @@ describe('SubmitPage', () => {
     })
   })
 
+  it('shows pleaseSelectLanguage error when language not selected', async () => {
+    mockFetch.mockResolvedValueOnce({
+      ok: true,
+      json: async () => ({ title: 'Test Video', thumbnail_url: null }),
+    })
+    const user = userEvent.setup()
+    render(<SubmitPage />)
+    const urlInput = screen.getByLabelText(/youtube url/i)
+    await user.type(urlInput, 'https://youtube.com/watch?v=dQw4w9WgXcQ')
+    await act(async () => { urlInput.blur() })
+    await user.selectOptions(screen.getByLabelText(/^category/i), 'educational')
+    await user.click(screen.getByRole('button', { name: /submit for review/i }))
+    await waitFor(() => {
+      expect(screen.getByText(/please select a language/i)).toBeInTheDocument()
+    })
+  })
+
   it('shows 409 duplicate error', async () => {
     // First fetch: metadata
     mockFetch.mockResolvedValueOnce({
@@ -112,6 +135,7 @@ describe('SubmitPage', () => {
     await user.type(urlInput, 'https://youtube.com/watch?v=dQw4w9WgXcQ')
     await act(async () => { urlInput.blur() })
     await user.selectOptions(screen.getByLabelText(/^category/i), 'educational')
+    await user.selectOptions(screen.getByLabelText(/^language/i), 'english')
     await user.click(screen.getByRole('button', { name: /submit for review/i }))
     await waitFor(() => {
       expect(screen.getByText(/already in the catalog/i)).toBeInTheDocument()
@@ -134,6 +158,7 @@ describe('SubmitPage', () => {
     await user.type(urlInput, 'https://youtube.com/watch?v=dQw4w9WgXcQ')
     await act(async () => { urlInput.blur() })
     await user.selectOptions(screen.getByLabelText(/^category/i), 'educational')
+    await user.selectOptions(screen.getByLabelText(/^language/i), 'english')
     await user.click(screen.getByRole('button', { name: /submit for review/i }))
     await waitFor(() => {
       expect(screen.getByText('Server error')).toBeInTheDocument()
@@ -151,7 +176,8 @@ describe('SubmitPage', () => {
     const urlInput = screen.getByLabelText(/youtube url/i)
     await user.type(urlInput, 'https://youtube.com/watch?v=dQw4w9WgXcQ')
     await act(async () => { urlInput.blur() })
-    await user.selectOptions(screen.getByLabelText(/category/i), 'educational')
+    await user.selectOptions(screen.getByLabelText(/^category/i), 'educational')
+    await user.selectOptions(screen.getByLabelText(/^language/i), 'english')
     await user.click(screen.getByRole('button', { name: /submit for review/i }))
     await waitFor(() => {
       expect(screen.getByText(/video submitted/i)).toBeInTheDocument()
@@ -172,7 +198,8 @@ describe('SubmitPage', () => {
     const urlInput = screen.getByLabelText(/youtube url/i)
     await user.type(urlInput, 'https://youtube.com/watch?v=dQw4w9WgXcQ')
     await act(async () => { urlInput.blur() })
-    await user.selectOptions(screen.getByLabelText(/category/i), 'educational')
+    await user.selectOptions(screen.getByLabelText(/^category/i), 'educational')
+    await user.selectOptions(screen.getByLabelText(/^language/i), 'english')
     await user.click(screen.getByRole('button', { name: /submit for review/i }))
     await waitFor(() => {
       expect(screen.getByText(/could not reach the server/i)).toBeInTheDocument()
@@ -250,6 +277,7 @@ describe('SubmitPage', () => {
     await user.type(urlInput, 'https://youtube.com/watch?v=dQw4w9WgXcQ')
     await act(async () => { urlInput.blur() })
     await user.selectOptions(screen.getByLabelText(/^category/i), 'educational')
+    await user.selectOptions(screen.getByLabelText(/^language/i), 'english')
     await user.click(screen.getByRole('button', { name: /submit for review/i }))
     await waitFor(() => {
       expect(screen.getByText('Something went wrong.')).toBeInTheDocument()

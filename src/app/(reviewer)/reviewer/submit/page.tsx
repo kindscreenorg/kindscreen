@@ -8,6 +8,7 @@ import { useT } from '@/lib/i18n/client'
 
 const VIDEO_CATEGORIES = Constants.public.Enums.video_category
 const AGE_BANDS = Constants.public.Enums.age_band
+const VIDEO_LANGUAGES = Constants.public.Enums.video_language
 
 const CATEGORY_LABELS: Record<string, string> = {
   educational: 'Educational',
@@ -21,6 +22,17 @@ const CATEGORY_LABELS: Record<string, string> = {
   other: 'Other',
 }
 
+const LANGUAGE_LABELS: Record<string, string> = {
+  english: 'English',
+  portuguese: 'Portuguese',
+  spanish: 'Spanish',
+  french: 'French',
+  german: 'German',
+  japanese: 'Japanese',
+  korean: 'Korean',
+  other: 'Other',
+}
+
 export default function SubmitPage() {
   const t = useT()
   const [url, setUrl] = useState('')
@@ -28,6 +40,7 @@ export default function SubmitPage() {
   const [title, setTitle] = useState('')
   const [thumbnailUrl, setThumbnailUrl] = useState('')
   const [category, setCategory] = useState('')
+  const [language, setLanguage] = useState('')
   const [ageBand, setAgeBand] = useState('')
   const [fetching, setFetching] = useState(false)
   const [submitting, setSubmitting] = useState(false)
@@ -41,6 +54,7 @@ export default function SubmitPage() {
     setTitle('')
     setThumbnailUrl('')
     setCategory('')
+    setLanguage('')
     setAgeBand('')
     setErrors({})
     setSubmitError('')
@@ -86,6 +100,7 @@ export default function SubmitPage() {
     if (!youtubeId) newErrors.url = t.submitPage.pleaseEnterUrl
     /* v8 ignore stop */
     if (!category) newErrors.category = t.submitPage.pleaseSelectCategory
+    if (!language) newErrors.language = t.submitPage.pleaseSelectLanguage
     if (Object.keys(newErrors).length > 0) {
       setErrors(newErrors)
       return
@@ -101,6 +116,7 @@ export default function SubmitPage() {
           youtube_id: youtubeId,
           title,
           category,
+          language,
           age_band: ageBand || undefined,
           thumbnail_url: thumbnailUrl || undefined,
         }),
@@ -221,6 +237,31 @@ export default function SubmitPage() {
           </select>
           {errors.category && (
             <p className="mt-1 text-xs text-rose-500">{errors.category}</p>
+          )}
+        </div>
+
+        {/* Language */}
+        <div>
+          <label htmlFor="language" className={labelClass}>
+            {t.submitPage.language} <span className="text-rose-400">*</span>
+          </label>
+          <select
+            id="language"
+            value={language}
+            onChange={(e) => setLanguage(e.target.value)}
+            disabled={!youtubeId}
+            className={inputClass}
+          >
+            <option value="">{t.submitPage.selectLanguage}</option>
+            {VIDEO_LANGUAGES.map((l) => (
+              <option key={l} value={l}>
+                {/* v8 ignore next */
+                LANGUAGE_LABELS[l] ?? l}
+              </option>
+            ))}
+          </select>
+          {errors.language && (
+            <p className="mt-1 text-xs text-rose-500">{errors.language}</p>
           )}
         </div>
 

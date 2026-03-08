@@ -16,6 +16,7 @@ export type VideoWithChannel = Tables<'videos'> & {
 
 const VIDEO_CATEGORIES = Constants.public.Enums.video_category
 const AGE_BANDS = Constants.public.Enums.age_band
+const VIDEO_LANGUAGES = Constants.public.Enums.video_language
 
 function ErrorState() {
   return (
@@ -30,15 +31,18 @@ function ErrorState() {
 export default async function BrowsePage({
   searchParams,
 }: {
-  searchParams: Promise<{ category?: string; age_band?: string }>
+  searchParams: Promise<{ category?: string; age_band?: string; language?: string }>
 }) {
-  const { category, age_band } = await searchParams
+  const { category, age_band, language } = await searchParams
 
   const validCategory = VIDEO_CATEGORIES.includes(category as typeof VIDEO_CATEGORIES[number])
     ? (category as typeof VIDEO_CATEGORIES[number])
     : undefined
   const validAgeBand = AGE_BANDS.includes(age_band as typeof AGE_BANDS[number])
     ? (age_band as typeof AGE_BANDS[number])
+    : undefined
+  const validLanguage = VIDEO_LANGUAGES.includes(language as typeof VIDEO_LANGUAGES[number])
+    ? (language as typeof VIDEO_LANGUAGES[number])
     : undefined
 
   const supabase = await createClient()
@@ -52,6 +56,7 @@ export default async function BrowsePage({
 
   if (validCategory) query = query.eq('category', validCategory)
   if (validAgeBand) query = query.eq('age_band', validAgeBand)
+  if (validLanguage) query = query.eq('language', validLanguage)
 
   const { data, count, error } = await query
 
@@ -64,6 +69,7 @@ export default async function BrowsePage({
       pageSize={PAGE_SIZE}
       category={validCategory}
       ageBand={validAgeBand}
+      language={validLanguage}
     />
   )
 }

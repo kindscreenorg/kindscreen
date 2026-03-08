@@ -45,6 +45,7 @@ function makeVideo(id: string, overrides: Partial<VideoWithChannel> = {}): Video
     thumbnail_url: null,
     age_band: '3-5',
     category: 'educational',
+    language: 'english',
     status: 'approved',
     submitted_by: 'u1',
     created_at: '2024-01-01T00:00:00Z',
@@ -234,6 +235,47 @@ describe('BrowseClient', () => {
     })
   })
 
+  it('navigates with language filter when language chip is clicked', async () => {
+    const user = userEvent.setup()
+    render(<BrowseClient initialVideos={videos} totalCount={3} pageSize={12} />)
+    const buttons = screen.getAllByRole('button')
+    const englishBtn = buttons.find((b) => b.textContent?.trim() === 'English')
+    if (englishBtn) {
+      await user.click(englishBtn)
+      expect(mockPush).toHaveBeenCalledWith(expect.stringContaining('language=english'))
+    }
+  })
+
+  it('applies language filter in loadMore when language prop is set', async () => {
+    const eqCalls: [string, unknown][] = []
+    const chainableBuilder: Record<string, unknown> = {}
+    const terminalResult = { data: [] }
+    for (const m of ['select', 'eq', 'order', 'range', 'neq', 'in', 'not']) {
+      chainableBuilder[m] = vi.fn().mockImplementation((...args: unknown[]) => {
+        if (m === 'eq') eqCalls.push(args as [string, unknown])
+        return chainableBuilder
+      })
+    }
+    chainableBuilder.then = vi.fn().mockImplementation(
+      (resolve: (v: typeof terminalResult) => void) => Promise.resolve(terminalResult).then(resolve)
+    )
+    mockSupabaseFrom.mockReturnValue(chainableBuilder)
+
+    const user = userEvent.setup()
+    render(
+      <BrowseClient
+        initialVideos={videos}
+        totalCount={10}
+        pageSize={3}
+        language="portuguese"
+      />
+    )
+    await user.click(screen.getByRole('button', { name: /load more/i }))
+    await waitFor(() => {
+      expect(eqCalls.some(([k, v]) => k === 'language' && v === 'portuguese')).toBe(true)
+    })
+  })
+
   it('navigates to /browse when "All ages" chip is clicked', async () => {
     const user = userEvent.setup()
     // Render with ageBand set so "All ages" chip click changes the route
@@ -416,7 +458,7 @@ describe('BrowseClient', () => {
     expect(screen.getByText(/fallback/)).toBeInTheDocument()
   })
 
-  it('active filters compose with search (eq called for category + age_band)', async () => {
+  it('active filters compose with search (eq called for category + age_band + language)', async () => {
     vi.useFakeTimers()
 
     const eqCalls: [string, unknown][] = []
@@ -439,6 +481,7 @@ describe('BrowseClient', () => {
         pageSize={12}
         category="educational"
         ageBand="3-5"
+        language="portuguese"
       />
     )
     const input = screen.getByPlaceholderText(/search videos/i)
@@ -447,5 +490,6 @@ describe('BrowseClient', () => {
 
     expect(eqCalls.some(([k, v]) => k === 'category' && v === 'educational')).toBe(true)
     expect(eqCalls.some(([k, v]) => k === 'age_band' && v === '3-5')).toBe(true)
+    expect(eqCalls.some(([k, v]) => k === 'language' && v === 'portuguese')).toBe(true)
   })
 })

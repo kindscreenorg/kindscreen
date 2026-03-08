@@ -23,6 +23,7 @@ const validBody = {
   youtube_id: 'dQw4w9WgXcQ',
   title: 'Test Video',
   category: 'educational',
+  language: 'english',
   age_band: '3-5',
   thumbnail_url: 'https://example.com/thumb.jpg',
 }
@@ -89,6 +90,27 @@ describe('POST /api/videos/submit', () => {
     expect(res.status).toBe(400)
     const json = await res.json() as { error: string }
     expect(json.error).toMatch(/Invalid age band/)
+  })
+
+  it('returns 400 when language is missing', async () => {
+    const mock = createMockSupabaseClient()
+    mock.auth.getUser = vi.fn().mockResolvedValue({ data: { user: { id: 'user-1' } }, error: null })
+    mockedCreateClient.mockResolvedValue(mock as never)
+    const { language: _lang, ...bodyWithoutLanguage } = validBody
+    const res = await POST(makeRequest(bodyWithoutLanguage))
+    expect(res.status).toBe(400)
+    const json = await res.json() as { error: string }
+    expect(json.error).toMatch(/required/)
+  })
+
+  it('returns 400 when language is invalid', async () => {
+    const mock = createMockSupabaseClient()
+    mock.auth.getUser = vi.fn().mockResolvedValue({ data: { user: { id: 'user-1' } }, error: null })
+    mockedCreateClient.mockResolvedValue(mock as never)
+    const res = await POST(makeRequest({ ...validBody, language: 'klingon' }))
+    expect(res.status).toBe(400)
+    const json = await res.json() as { error: string }
+    expect(json.error).toMatch(/Invalid language/)
   })
 
   it('returns 409 when video already exists', async () => {

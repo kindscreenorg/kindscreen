@@ -20,6 +20,7 @@ const en = {
   browse: {
     allAges: 'All ages',
     all: 'All',
+    allLanguages: 'All languages',
     noVideos: 'No videos found for these filters.',
     clearFilters: 'Clear filters',
     loadMore: 'Load more',
@@ -174,6 +175,9 @@ const en = {
     success: 'Video submitted! It will enter the review queue shortly.',
     pleaseEnterUrl: 'Please enter a valid YouTube URL first.',
     pleaseSelectCategory: 'Please select a category.',
+    language: 'Language',
+    selectLanguage: 'Select a language…',
+    pleaseSelectLanguage: 'Please select a language.',
     somethingWentWrong: 'Something went wrong.',
   },
   reviewPage: {
@@ -227,6 +231,7 @@ const pt: typeof en = {
   browse: {
     allAges: 'Todas as idades',
     all: 'Todas',
+    allLanguages: 'Todos os idiomas',
     noVideos: 'Nenhum vídeo encontrado para esses filtros.',
     clearFilters: 'Limpar filtros',
     loadMore: 'Carregar mais',
@@ -381,6 +386,9 @@ const pt: typeof en = {
     success: 'Vídeo enviado! Em breve entrará na fila de revisão.',
     pleaseEnterUrl: 'Por favor, insira uma URL válida do YouTube primeiro.',
     pleaseSelectCategory: 'Por favor, selecione uma categoria.',
+    language: 'Idioma',
+    selectLanguage: 'Selecione um idioma…',
+    pleaseSelectLanguage: 'Por favor, selecione um idioma.',
     somethingWentWrong: 'Algo deu errado.',
   },
   reviewPage: {

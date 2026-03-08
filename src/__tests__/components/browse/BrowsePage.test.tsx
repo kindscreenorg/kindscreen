@@ -77,6 +77,22 @@ describe('BrowsePage', () => {
     expect(props.ageBand).toBeUndefined()
   })
 
+  it('passes valid language to BrowseClient', async () => {
+    mockCreateClient.mockResolvedValue(makeSupabaseMock([], 0))
+    const jsx = await BrowsePage({ searchParams: Promise.resolve({ language: 'portuguese' }) })
+    render(jsx)
+    const props = JSON.parse(screen.getByTestId('browse-client').getAttribute('data-props')!) as Record<string, unknown>
+    expect(props.language).toBe('portuguese')
+  })
+
+  it('ignores invalid language (passes undefined)', async () => {
+    mockCreateClient.mockResolvedValue(makeSupabaseMock([], 0))
+    const jsx = await BrowsePage({ searchParams: Promise.resolve({ language: 'klingon' }) })
+    render(jsx)
+    const props = JSON.parse(screen.getByTestId('browse-client').getAttribute('data-props')!) as Record<string, unknown>
+    expect(props.language).toBeUndefined()
+  })
+
   it('shows error state when Supabase returns an error', async () => {
     mockCreateClient.mockResolvedValue(makeSupabaseMock(null, null, { message: 'DB error' }))
     const jsx = await BrowsePage({ searchParams: Promise.resolve({}) })
