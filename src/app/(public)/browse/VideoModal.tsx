@@ -38,6 +38,7 @@ export default function VideoModal({ video, onClose, onVideoChange }: VideoModal
   }, [video, onClose])
 
   // Reset UI state when video changes
+  /* eslint-disable react-hooks/set-state-in-effect */
   useEffect(() => {
     setVideoEnded(false)
     setUpNextVideos([])
@@ -45,6 +46,21 @@ export default function VideoModal({ video, onClose, onVideoChange }: VideoModal
     setFlagReason('')
     setFlagError('')
   }, [video?.id])
+  /* eslint-enable react-hooks/set-state-in-effect */
+
+  async function fetchUpNext(currentId: string) {
+    const supabase = createClient()
+    const { data } = await supabase
+      .from('videos')
+      .select('*, channels(name)')
+      .eq('status', 'approved')
+      .neq('id', currentId)
+      .limit(20)
+    const shuffled = ((data ?? []) as unknown as VideoWithChannel[])
+      .sort(() => Math.random() - 0.5)
+      .slice(0, 3)
+    setUpNextVideos(shuffled)
+  }
 
   // IFrame API player — init/destroy when youtube_id changes
   useEffect(() => {
@@ -77,20 +93,6 @@ export default function VideoModal({ video, onClose, onVideoChange }: VideoModal
       playerRef.current = null
     }
   }, [video?.youtube_id]) // eslint-disable-line react-hooks/exhaustive-deps
-
-  async function fetchUpNext(currentId: string) {
-    const supabase = createClient()
-    const { data } = await supabase
-      .from('videos')
-      .select('*, channels(name)')
-      .eq('status', 'approved')
-      .neq('id', currentId)
-      .limit(20)
-    const shuffled = ((data ?? []) as unknown as VideoWithChannel[])
-      .sort(() => Math.random() - 0.5)
-      .slice(0, 3)
-    setUpNextVideos(shuffled)
-  }
 
   async function submitFlag() {
     /* v8 ignore start */
