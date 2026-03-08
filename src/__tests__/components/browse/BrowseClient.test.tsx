@@ -294,6 +294,14 @@ describe('BrowseClient', () => {
     expect(mockPush).toHaveBeenCalledWith('/browse')
   })
 
+  it('navigates to /browse when "All languages" chip is clicked', async () => {
+    const user = userEvent.setup()
+    render(<BrowseClient initialVideos={videos} totalCount={3} pageSize={12} language="english" />)
+    const allLangBtn = screen.getByRole('button', { name: /all languages/i })
+    await user.click(allLangBtn)
+    expect(mockPush).toHaveBeenCalledWith('/browse')
+  })
+
   it('handles null data from loadMore gracefully', async () => {
     // Covers the `data ?? []` fallback in loadMore
     mockSupabaseFrom.mockReturnValue({
