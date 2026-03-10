@@ -1,45 +1,53 @@
-'use client'
+'use client';
 
-import { useState } from 'react'
+import { useState } from 'react';
+import { useT } from '@/lib/i18n/client';
 
 export interface ReviewerRow {
-  id: string
-  username: string
-  review_count: number
-  is_trusted: boolean
-  is_moderator: boolean
-  is_admin: boolean
+  id: string;
+  username: string;
+  review_count: number;
+  is_trusted: boolean;
+  is_moderator: boolean;
+  is_admin: boolean;
 }
 
 export default function ReviewerList({
   initialReviewers,
-  currentIsAdmin,
+  currentIsAdmin
 }: {
-  initialReviewers: ReviewerRow[]
-  currentIsAdmin: boolean
+  initialReviewers: ReviewerRow[];
+  currentIsAdmin: boolean;
 }) {
-  const [reviewers, setReviewers] = useState(initialReviewers)
-  const [errors, setErrors] = useState<Record<string, string>>({})
-
-  async function toggle(id: string, field: 'is_trusted' | 'is_moderator', value: boolean) {
-    setErrors((e) => ({ ...e, [id]: '' }))
+  const [reviewers, setReviewers] = useState(initialReviewers);
+  const [errors, setErrors] = useState<Record<string, string>>({});
+  const t = useT();
+  async function toggle(
+    id: string,
+    field: 'is_trusted' | 'is_moderator',
+    value: boolean
+  ) {
+    setErrors((e) => ({ ...e, [id]: '' }));
 
     const res = await fetch(`/api/moderator/reviewers/${id}`, {
       method: 'PATCH',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ field, value }),
-    })
+      body: JSON.stringify({ field, value })
+    });
 
     if (!res.ok) {
-      const json = (await res.json()) as { error?: string }
-      setErrors((e) => ({ ...e, [id]: json.error ?? 'Something went wrong.' }))
-      return
+      const json = (await res.json()) as { error?: string };
+      setErrors((e) => ({
+        ...e,
+        [id]: json.error ?? 'Something went wrong.'
+      }));
+      return;
     }
 
-    const updated = (await res.json()) as ReviewerRow
+    const updated = (await res.json()) as ReviewerRow;
     setReviewers((prev) =>
       prev.map((r) => (r.id === updated.id ? { ...r, ...updated } : r))
-    )
+    );
   }
 
   return (
@@ -52,11 +60,16 @@ export default function ReviewerList({
                 {r.username}
                 {r.is_admin && (
                   <span className="ml-2 text-xs font-bold text-amber-600 bg-amber-50 border border-amber-200 rounded-full px-2 py-0.5">
-                    Admin
+                    {t.reviewPage.admin}
                   </span>
                 )}
               </p>
-              <p className="text-xs text-warm-400 mt-0.5">{r.review_count} reviews</p>
+              <p className="text-xs text-warm-400 mt-0.5">
+                {r.review_count}{' '}
+                {r.review_count === 1
+                  ? t.reviewPage.reviews_one
+                  : t.reviewPage.reviews_other}
+              </p>
               {errors[r.id] && (
                 <p className="text-xs text-rose-500 mt-1">{errors[r.id]}</p>
               )}
@@ -65,7 +78,7 @@ export default function ReviewerList({
             <div className="flex gap-2 flex-wrap">
               {/* Trusted toggle — any moderator */}
               <Toggle
-                label="Trusted"
+                label={t.reviewPage.trusted}
                 active={r.is_trusted}
                 disabled={r.is_admin}
                 onToggle={() => toggle(r.id, 'is_trusted', !r.is_trusted)}
@@ -74,7 +87,7 @@ export default function ReviewerList({
               {/* Moderator toggle — admins only */}
               {currentIsAdmin && (
                 <Toggle
-                  label="Moderator"
+                  label={t.reviewPage.moderator}
                   active={r.is_moderator}
                   disabled={r.is_admin}
                   onToggle={() => toggle(r.id, 'is_moderator', !r.is_moderator)}
@@ -85,19 +98,19 @@ export default function ReviewerList({
         </div>
       ))}
     </div>
-  )
+  );
 }
 
 function Toggle({
   label,
   active,
   disabled,
-  onToggle,
+  onToggle
 }: {
-  label: string
-  active: boolean
-  disabled: boolean
-  onToggle: () => void
+  label: string;
+  active: boolean;
+  disabled: boolean;
+  onToggle: () => void;
 }) {
   return (
     <button
@@ -117,5 +130,5 @@ function Toggle({
       />
       {label}
     </button>
-  )
+  );
 }

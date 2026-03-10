@@ -2,6 +2,7 @@ import type { Metadata } from 'next'
 import { createClient } from '@/lib/supabase/server'
 import type { Tables } from '@/types/database'
 import { Constants } from '@/types/database'
+import { getT } from '@/lib/i18n/server'
 import BrowseClient from './BrowseClient'
 
 export const metadata: Metadata = {
@@ -18,12 +19,12 @@ const VIDEO_CATEGORIES = Constants.public.Enums.video_category
 const AGE_BANDS = Constants.public.Enums.age_band
 const VIDEO_LANGUAGES = Constants.public.Enums.video_language
 
-function ErrorState() {
+function ErrorState({ title, body }: { title: string; body: string }) {
   return (
     <div className="flex flex-col items-center justify-center py-20 text-center px-4">
       <div className="text-5xl mb-4">😕</div>
-      <h2 className="font-heading text-xl font-semibold text-warm-700 mb-2">Something went wrong</h2>
-      <p className="text-warm-400 text-sm">We couldn&apos;t load videos right now. Please try again later.</p>
+      <h2 className="font-heading text-xl font-semibold text-warm-700 mb-2">{title}</h2>
+      <p className="text-warm-400 text-sm">{body}</p>
     </div>
   )
 }
@@ -60,7 +61,10 @@ export default async function BrowsePage({
 
   const { data, count, error } = await query
 
-  if (error) return <ErrorState />
+  if (error) {
+    const t = await getT()
+    return <ErrorState title={t.browseError.title} body={t.browseError.body} />
+  }
 
   return (
     <BrowseClient

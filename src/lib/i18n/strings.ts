@@ -1,4 +1,4 @@
-export type Locale = 'en' | 'pt'
+export type Locale = 'en' | 'pt';
 
 const en = {
   nav: {
@@ -10,12 +10,15 @@ const en = {
     madeWith: 'Made with ♥ for kids everywhere.',
   },
   home: {
-    tagline: 'A community-curated catalog of YouTube videos safe for children aged 3–12. Watched by real parents. Verified by consensus. Zero surprises.',
+    tagline:
+      'A community-curated catalog of YouTube videos safe for children aged 3–12. Watched by real parents. Verified by consensus. Zero surprises.',
     browseVideos: 'Browse Videos',
     becomeReviewer: 'Become a Reviewer',
     supportProject: 'Support the project',
     login: 'Log in',
-    disclaimer: 'Age bands are suggested by real parents and are a guide, not a guarantee. Every child is different — you know yours best.',
+    disclaimer:
+      'Age bands are suggested by real parents and are a guide, not a guarantee. Every child is different — you know yours best.',
+    openSource: '★ Open source on GitHub',
   },
   browse: {
     allAges: 'All ages',
@@ -28,23 +31,30 @@ const en = {
     searchPlaceholder: 'Search videos…',
     noSearchResults: 'No videos found for "{query}".',
   },
+  browseError: {
+    title: 'Something went wrong',
+    body: "We couldn't load videos right now. Please try again later.",
+  },
   modal: {
     watchNext: 'Watch next on KindScreen',
     loadingSuggestions: 'Loading suggestions…',
     close: 'Close',
     reportVideo: '🚩 Report this video',
-    whatsTheIssue: 'What\'s the issue?',
-    reportPlaceholder: 'Describe why this video may not be appropriate for kids…',
+    whatsTheIssue: "What's the issue?",
+    reportPlaceholder:
+      'Describe why this video may not be appropriate for kids…',
     cancel: 'Cancel',
     submitReport: 'Submit report',
     submittingReport: 'Submitting report…',
-    reportSubmitted: '✓ Report submitted. Thank you for helping keep KindScreen safe.',
+    reportSubmitted:
+      '✓ Report submitted. Thank you for helping keep KindScreen safe.',
     somethingWentWrong: 'Something went wrong.',
     serverError: 'Could not reach the server.',
   },
   donate: {
     title: 'Help KindScreen grow',
-    subtitle: 'Every donation unlocks better tools for keeping kids safe online. 100% of funds go directly to running costs — no salaries, no overhead.',
+    subtitle:
+      'Every donation unlocks better tools for keeping kids safe online. 100% of funds go directly to running costs — no salaries, no overhead.',
     sponsorGitHub: 'Sponsor on GitHub ↗',
     liveNumbers: 'Live numbers',
     videosInCatalog: 'Videos in catalog',
@@ -57,7 +67,8 @@ const en = {
     milestoneRoadmap: 'Milestone roadmap',
     reached: '✓ Reached',
     builtInPublic: 'Built in public. 100% transparent.',
-    transparencyNote: 'No VC. No ads. No selling data. KindScreen is funded by the community it serves. Sponsorships are handled via GitHub Sponsors.',
+    transparencyNote:
+      'No VC. No ads. No selling data. KindScreen is funded by the community it serves. Sponsorships are handled via GitHub Sponsors.',
   },
   login: {
     title: 'Welcome back',
@@ -68,7 +79,7 @@ const en = {
     forgotPassword: 'Forgot password?',
     loginBtn: 'Log in',
     loggingIn: 'Logging in…',
-    noAccount: 'Don\'t have an account?',
+    noAccount: "Don't have an account?",
     signUp: 'Sign up',
     missingFields: 'Please enter your email and password.',
     incorrectCreds: 'Incorrect email or password.',
@@ -97,7 +108,7 @@ const en = {
   },
   forgotPw: {
     title: 'Forgot your password?',
-    subtitle: 'Enter your email and we\'ll send you a reset link.',
+    subtitle: "Enter your email and we'll send you a reset link.",
     email: 'Email',
     sendResetLink: 'Send reset link',
     sending: 'Sending…',
@@ -127,13 +138,14 @@ const en = {
   signupConfirm: {
     title: 'Check your inbox',
     body: 'We sent a confirmation link to your email address. Click the link to activate your account — it expires in 24 hours.',
-    noEmail: 'Didn\'t receive it?',
+    noEmail: "Didn't receive it?",
     tryAgain: 'Try signing up again',
   },
   reviewerDashboard: {
     welcomeBack: '👋 Welcome back, {username}',
     trusted: '⭐ Trusted Reviewer',
-    impactBanner: '🛡️ Your reviews have helped protect kids watching {count} {videos}.',
+    impactBanner:
+      '🛡️ Your reviews have helped protect kids watching {count} {videos}.',
     approvedVideo: 'approved video',
     approvedVideos: 'approved videos',
     thankYou: 'Thank you for keeping KindScreen safe.',
@@ -185,7 +197,8 @@ const en = {
     loadingNext: 'Loading next…',
     loadingQueue: 'Loading review queue…',
     queueEmpty: 'Queue is empty!',
-    queueEmptyBody: 'No pending videos to review right now. Check back later or submit a new video.',
+    queueEmptyBody:
+      'No pending videos to review right now. Check back later or submit a new video.',
     submitVideo: '+ Submit a Video',
     safetyChecklist: 'Safety checklist',
     ageBandSuggestion: 'Age band suggestion',
@@ -208,25 +221,134 @@ const en = {
     ageBand35: '3–5 years',
     ageBand69: '6–9 years',
     ageBand1012: '10–12 years',
+    backToDashboard: '← Dashboard',
+    reviewer_one: 'reviewer.',
+    reviewer_other: 'reviewers.',
+    manageReviewers: 'Manage Reviewers',
+    manageReviewersAdmin: 'You can promote/demote moderators.',
+    manageReviewersTrusted: 'You can grant or revoke Trusted status.',
+    admin: 'Admin',
+    reviews_one: 'review',
+    reviews_other: 'reviews',
+    trusted: 'Trusted',
+    moderator: 'Moderator',
   },
-}
+  moderatorDashboard: {
+    moderator: 'Moderator',
+    myDashboard: 'My Dashboard',
+    title: 'Moderator Dashboard',
+    allVideosLink: 'All Videos',
+    viewReviewers: 'View Reviewers',
+    videosWithOpenFlags_one: 'video with open flags',
+    videosWithOpenFlags_other: 'videos with open flags',
+    noFlaggedVideos: 'No flagged videos',
+  },
+  allVideosPage: {
+    back: '← Back',
+    allVideos: 'All Videos',
+    video_one: 'video total',
+    video_other: 'videos total',
+    noVideos: 'No videos in this category.',
+    removeFromCatalog: '✕ Remove from catalog',
+    restoreFromCatalog: '✓ Restore',
+    all: 'All',
+    approved: 'Approved',
+    pending: 'Pending',
+    rejected: 'Rejected',
+    allClear: 'All clear!',
+    noFlaggedVideosRightNow: 'No flagged videos right now.',
+    watchOnYouTube: 'Watch on YouTube ↗',
+    loading: 'Loading…',
+    flagReasons: 'Flag reasons',
+    open: 'open',
+    flag_one: 'flag',
+    flag_other: 'flags',
+    statusLabel: 'status',
+    clearFlagsAndRestore: '✓ Clear flags & restore',
+  },
+  auth: {
+    termsAndPrivacy:
+      'By using KindScreen you agree to our <terms>Terms and Privacy Policy</terms>',
+  },
+  notFound: {
+    title: 'Page not found',
+    body: "This page doesn't exist, but plenty of great videos are waiting for your little ones.",
+    backToHome: 'Back to KindScreen',
+  },
+  privacy: {
+    lastUpdated: 'Last updated: March 2026',
+    intro:
+      'KindScreen ("we", "us") is a community-curated catalog of safe YouTube videos for children. We respect your privacy and collect only what is necessary to operate the service.',
+    dataWeCollectTitle: '1. Data we collect',
+    ifYouSignUp: 'If you sign up as a reviewer:',
+    reviewerEmail: 'Your email address (used to verify your account and send password reset emails)',
+    reviewerUsername: 'A username you choose (displayed on your profile)',
+    reviewerHistory: 'Your review history (the votes and feedback you submit on videos)',
+    ifAnonymous: 'If you are an anonymous visitor:',
+    noPersonalData:
+      'We do not collect any personal data. We do not use analytics or tracking pixels.',
+    cookiesTitle: '2. Cookies',
+    cookiesIntroBefore: 'We use only ',
+    cookiesStrictlyNecessary: 'strictly necessary cookies',
+    cookiesIntroAfter:
+      ' — cookies required for the site to function. We do not use advertising, analytics, or third-party cookies. Because these cookies are strictly necessary, we do not require your consent to place them.',
+    tableCookie: 'Cookie',
+    tablePurpose: 'Purpose',
+    tableExpiry: 'Expiry',
+    localePurpose: 'Stores your language preference (English or Portuguese)',
+    localeExpiry: '1 year',
+    sbPurpose:
+      'Supabase authentication session tokens — keeps you logged in as a reviewer',
+    sbExpiry: 'Session',
+    howWeUseTitle: '3. How we use your data',
+    useAccount: 'To create and manage your reviewer account',
+    useAuth: 'To authenticate you when you log in',
+    useActivity: 'To record and display your review activity',
+    usePasswordReset: 'To send you a password reset email if requested',
+    weDoNotSell:
+      'We do not sell your data, share it with advertisers, or use it for any purpose other than operating KindScreen.',
+    dataStorageTitle: '4. Data storage',
+    dataStorageBody:
+      'Your data is stored in Supabase (supabase.com), a managed database and authentication platform. Data is stored in the EU (Frankfurt, Germany).',
+    yourRightsTitle: '5. Your rights',
+    yourRightsIntro: 'Under the GDPR and LGPD, you have the right to:',
+    rightAccessLabel: 'Access',
+    rightAccessRest: 'the personal data we hold about you',
+    rightDeleteLabel: 'Delete',
+    rightDeleteRest: 'your account and all associated data',
+    rightCorrectLabel: 'Correct',
+    rightCorrectRest: 'inaccurate data',
+    exerciseRightsBefore: 'To exercise these rights, email us at ',
+    exerciseRightsAfter: '.',
+    privacyEmail: 'privacy@kindscreen.dev',
+    dataRetentionTitle: '6. Data retention',
+    dataRetentionBody:
+      'Reviewer accounts and associated reviews are retained for as long as the account is active. If you delete your account, your email and username are permanently deleted. Reviews you submitted may be anonymised and retained to maintain the integrity of the catalog.',
+    contactTitle: '7. Contact',
+    contactBodyBefore: 'Questions about this policy? Email us at ',
+    contactBodyAfter: '.',
+  },
+};
 
 const pt: typeof en = {
   nav: {
     becomeReviewer: 'Seja um Revisor',
-    dashboard: 'Painel',
+    dashboard: 'Dashboard',
   },
   footer: {
     privacy: 'Política de Privacidade',
     madeWith: 'Feito com ♥ para crianças em todo o mundo.',
   },
   home: {
-    tagline: 'Um catálogo curado pela comunidade de vídeos do YouTube seguros para crianças de 3 a 12 anos. Assistido por pais reais. Verificado por consenso. Zero surpresas.',
+    tagline:
+      'Um catálogo curado pela comunidade de vídeos do YouTube seguros para crianças de 3 a 12 anos. Assistido por pais reais. Verificado por consenso. Zero surpresas.',
     browseVideos: 'Explorar Vídeos',
     becomeReviewer: 'Seja um Revisor',
     supportProject: 'Apoiar o projeto',
     login: 'Entrar',
-    disclaimer: 'As faixas etárias são sugeridas por pais reais e servem como guia, não como garantia. Cada criança é diferente — você conhece a sua melhor.',
+    disclaimer:
+      'As faixas etárias são sugeridas por pais reais e servem como guia, não como garantia. Cada criança é diferente — você conhece a sua melhor.',
+     openSource: '★ Código aberto no GitHub',
   },
   browse: {
     allAges: 'Todas as idades',
@@ -239,23 +361,30 @@ const pt: typeof en = {
     searchPlaceholder: 'Buscar vídeos…',
     noSearchResults: 'Nenhum vídeo encontrado para "{query}".',
   },
+  browseError: {
+    title: 'Algo deu errado',
+    body: 'Não foi possível carregar os vídeos agora. Tente novamente mais tarde.',
+  },
   modal: {
     watchNext: 'Assista a seguir no KindScreen',
     loadingSuggestions: 'Carregando sugestões…',
     close: 'Fechar',
     reportVideo: '🚩 Reportar este vídeo',
     whatsTheIssue: 'Qual é o problema?',
-    reportPlaceholder: 'Descreva por que este vídeo pode não ser adequado para crianças…',
+    reportPlaceholder:
+      'Descreva por que este vídeo pode não ser adequado para crianças…',
     cancel: 'Cancelar',
     submitReport: 'Enviar denúncia',
     submittingReport: 'Enviando denúncia…',
-    reportSubmitted: '✓ Denúncia enviada. Obrigado por ajudar a manter o KindScreen seguro.',
+    reportSubmitted:
+      '✓ Denúncia enviada. Obrigado por ajudar a manter o KindScreen seguro.',
     somethingWentWrong: 'Algo deu errado.',
     serverError: 'Não foi possível contatar o servidor.',
   },
   donate: {
     title: 'Ajude o KindScreen a crescer',
-    subtitle: 'Cada doação desbloqueia melhores ferramentas para manter crianças seguras online. 100% dos fundos vão diretamente para custos operacionais — sem salários, sem despesas gerais.',
+    subtitle:
+      'Cada doação desbloqueia melhores ferramentas para manter crianças seguras online. 100% dos fundos vão diretamente para custos operacionais — sem salários, sem despesas gerais.',
     sponsorGitHub: 'Patrocinar no GitHub ↗',
     liveNumbers: 'Números ao vivo',
     videosInCatalog: 'Vídeos no catálogo',
@@ -268,7 +397,8 @@ const pt: typeof en = {
     milestoneRoadmap: 'Roteiro de marcos',
     reached: '✓ Alcançado',
     builtInPublic: 'Construído em público. 100% transparente.',
-    transparencyNote: 'Sem VC. Sem anúncios. Sem venda de dados. O KindScreen é financiado pela comunidade que serve. Patrocínios são gerenciados pelo GitHub Sponsors.',
+    transparencyNote:
+      'Sem VC. Sem anúncios. Sem venda de dados. O KindScreen é financiado pela comunidade que serve. Patrocínios são gerenciados pelo GitHub Sponsors.',
   },
   login: {
     title: 'Bem-vindo(a) de volta',
@@ -315,7 +445,8 @@ const pt: typeof en = {
     rememberedIt: 'Lembrou?',
     login: 'Entrar',
     sentTitle: 'Verifique sua caixa de entrada',
-    sentBody: 'Se esse e-mail estiver cadastrado, enviamos um link de redefinição de senha.',
+    sentBody:
+      'Se esse e-mail estiver cadastrado, enviamos um link de redefinição de senha.',
     backToLogin: 'Voltar para entrar',
     missingEmail: 'Por favor, insira seu endereço de e-mail.',
     emailPlaceholder: 'voce@exemplo.com',
@@ -331,7 +462,8 @@ const pt: typeof en = {
     missingPassword: 'Por favor, insira uma nova senha.',
     passwordTooShort: 'A senha deve ter pelo menos 8 caracteres.',
     passwordMismatch: 'As senhas não coincidem.',
-    updateError: 'Não foi possível atualizar a senha. Por favor, solicite um novo link.',
+    updateError:
+      'Não foi possível atualizar a senha. Por favor, solicite um novo link.',
     passwordPlaceholder: 'Pelo menos 8 caracteres',
     confirmPlaceholder: 'Repita a nova senha',
   },
@@ -344,7 +476,8 @@ const pt: typeof en = {
   reviewerDashboard: {
     welcomeBack: '👋 Bem-vindo(a) de volta, {username}',
     trusted: '⭐ Revisor(a) de Confiança',
-    impactBanner: '🛡️ Suas avaliações ajudaram a proteger crianças assistindo {count} {videos}.',
+    impactBanner:
+      '🛡️ Suas avaliações ajudaram a proteger crianças assistindo {count} {videos}.',
     approvedVideo: 'vídeo aprovado',
     approvedVideos: 'vídeos aprovados',
     thankYou: 'Obrigado por manter o KindScreen seguro.',
@@ -370,7 +503,8 @@ const pt: typeof en = {
     fetchingInfo: 'Buscando informações do vídeo…',
     videoNotFound: 'Vídeo não encontrado no YouTube.',
     invalidUrl: 'Não foi possível encontrar um ID de vídeo YouTube válido.',
-    serverError: 'Não foi possível contatar o servidor. Por favor, tente novamente.',
+    serverError:
+      'Não foi possível contatar o servidor. Por favor, tente novamente.',
     thumbnailAlt: 'Miniatura do vídeo',
     titleField: 'Título',
     titlePlaceholder: 'Preenchido automaticamente do YouTube',
@@ -396,7 +530,8 @@ const pt: typeof en = {
     loadingNext: 'Carregando próximo…',
     loadingQueue: 'Carregando fila de revisão…',
     queueEmpty: 'Fila vazia!',
-    queueEmptyBody: 'Sem vídeos pendentes para revisar agora. Volte mais tarde ou envie um novo vídeo.',
+    queueEmptyBody:
+      'Sem vídeos pendentes para revisar agora. Volte mais tarde ou envie um novo vídeo.',
     submitVideo: '+ Enviar um Vídeo',
     safetyChecklist: 'Lista de verificação de segurança',
     ageBandSuggestion: 'Sugestão de faixa etária',
@@ -405,13 +540,15 @@ const pt: typeof en = {
     approve: '✓ Aprovar',
     reject: '✕ Rejeitar',
     rejectionReasonLabel: 'Qual foi o problema?',
-    rejectionPlaceholder: 'Descreva brevemente por que este vídeo foi rejeitado…',
+    rejectionPlaceholder:
+      'Descreva brevemente por que este vídeo foi rejeitado…',
     submitReview: 'Enviar Avaliação →',
     submitting: 'Enviando…',
     videoEnded: 'Vídeo encerrado',
     videoEndedSub: 'Role para baixo para completar sua avaliação ↓',
     somethingWentWrong: 'Algo deu errado.',
-    serverError: 'Não foi possível contatar o servidor. Por favor, tente novamente.',
+    serverError:
+      'Não foi possível contatar o servidor. Por favor, tente novamente.',
     hasViolence: 'Alguma violência? (incluindo desenho)',
     hasScary: 'Algum conteúdo assustador?',
     hasAdultThemes: 'Algum tema adulto?',
@@ -419,8 +556,116 @@ const pt: typeof en = {
     ageBand35: '3–5 anos',
     ageBand69: '6–9 anos',
     ageBand1012: '10–12 anos',
+    backToDashboard: '← Painel',
+    reviewer_one: 'revisor.',
+    reviewer_other: 'revisores.',
+    manageReviewers: 'Gerenciar Revisores',
+    manageReviewersAdmin: 'Você pode promover/demotar moderadores.',
+    manageReviewersTrusted: 'Você pode conceder/revogar status de Confiável.',
+    admin: 'Admin',
+    reviews_one: 'avaliação',
+    reviews_other: 'avaliações',
+    trusted: 'Confiável',
+    moderator: 'Moderador',
   },
-}
+  moderatorDashboard: {
+    moderator: 'Moderador',
+    myDashboard: 'Dashboard do Moderador',
+    title: 'Painel do Moderador',
+    allVideosLink: 'Todos os Vídeos',
+    viewReviewers: 'Ver Revisores',
+    videosWithOpenFlags_one: 'vídeo com flags abertos',
+    videosWithOpenFlags_other: 'vídeos com flags abertos',
+    noFlaggedVideos: 'Nenhum vídeo com flags',
+  },
+  allVideosPage: {
+    back: '← Voltar',
+    allVideos: 'Todos os Vídeos',
+    video_one: 'vídeo total',
+    video_other: 'vídeos total',
+    noVideos: 'Nenhum vídeo nesta categoria.',
+    removeFromCatalog: '✕ Remover do catálogo',
+    restoreFromCatalog: '✓ Restaurar do catálogo',
+    all: 'Todas',
+    approved: 'Aprovadas',
+    pending: 'Pendentes',
+    rejected: 'Rejeitadas',
+    allClear: 'Todos limpos!',
+    noFlaggedVideosRightNow: 'Nenhum vídeo com flags abertos no momento.',
+    watchOnYouTube: 'Assistir no YouTube ↗',
+    loading: 'Carregando…',
+    flagReasons: 'Motivos dos flags',
+    open: 'abertos',
+    flag_one: 'flag',
+    flag_other: 'flags',
+    statusLabel: 'status',
+    clearFlagsAndRestore: '✓ Limpar flags e restaurar',
+  },
+  auth: {
+    termsAndPrivacy:
+      'Ao usar o KindScreen, você concorda com nossos <terms>Termos</terms> e <privacy>Política de Privacidade</privacy>',
+  },
+  notFound: {
+    title: 'Página não encontrada',
+    body: 'Esta página não existe, mas muitos vídeos legais estão esperando pelos seus pequenos.',
+    backToHome: 'Voltar ao KindScreen',
+  },
+  privacy: {
+    lastUpdated: 'Última atualização: março de 2026',
+    intro:
+      'O KindScreen ("nós") é um catálogo curado pela comunidade de vídeos do YouTube seguros para crianças. Respeitamos sua privacidade e coletamos apenas o necessário para operar o serviço.',
+    dataWeCollectTitle: '1. Dados que coletamos',
+    ifYouSignUp: 'Se você se cadastrar como revisor(a):',
+    reviewerEmail:
+      'Seu endereço de e-mail (usado para verificar sua conta e enviar e-mails de redefinição de senha)',
+    reviewerUsername: 'Um nome de usuário que você escolhe (exibido no seu perfil)',
+    reviewerHistory:
+      'Seu histórico de avaliações (os votos e feedback que você envia sobre vídeos)',
+    ifAnonymous: 'Se você for um visitante anônimo:',
+    noPersonalData:
+      'Não coletamos nenhum dado pessoal. Não usamos análises ou pixels de rastreamento.',
+    cookiesTitle: '2. Cookies',
+    cookiesIntroBefore: 'Usamos apenas ',
+    cookiesStrictlyNecessary: 'cookies estritamente necessários',
+    cookiesIntroAfter:
+      ' — essenciais para o funcionamento do site. Não usamos cookies de publicidade, análise ou de terceiros. Como esses cookies são estritamente necessários, não precisamos do seu consentimento para colocá-los.',
+    tableCookie: 'Cookie',
+    tablePurpose: 'Finalidade',
+    tableExpiry: 'Validade',
+    localePurpose: 'Armazena sua preferência de idioma (inglês ou português)',
+    localeExpiry: '1 ano',
+    sbPurpose:
+      'Tokens de sessão de autenticação Supabase — mantém você conectado(a) como revisor(a)',
+    sbExpiry: 'Sessão',
+    howWeUseTitle: '3. Como usamos seus dados',
+    useAccount: 'Para criar e gerenciar sua conta de revisor(a)',
+    useAuth: 'Para autenticá-lo(a) quando você faz login',
+    useActivity: 'Para registrar e exibir sua atividade de avaliação',
+    usePasswordReset: 'Para enviar um e-mail de redefinição de senha, se solicitado',
+    weDoNotSell:
+      'Não vendemos seus dados, não os compartilhamos com anunciantes nem os usamos para qualquer finalidade além de operar o KindScreen.',
+    dataStorageTitle: '4. Armazenamento de dados',
+    dataStorageBody:
+      'Seus dados são armazenados no Supabase (supabase.com), uma plataforma gerenciada de banco de dados e autenticação. Os dados são armazenados na UE (Frankfurt, Alemanha).',
+    yourRightsTitle: '5. Seus direitos',
+    yourRightsIntro: 'Sob o LGPD e o GDPR, você tem o direito de:',
+    rightAccessLabel: 'Acessar',
+    rightAccessRest: 'os dados pessoais que mantemos sobre você',
+    rightDeleteLabel: 'Excluir',
+    rightDeleteRest: 'sua conta e todos os dados associados',
+    rightCorrectLabel: 'Corrigir',
+    rightCorrectRest: 'dados imprecisos',
+    exerciseRightsBefore: 'Para exercer esses direitos, envie um e-mail para ',
+    exerciseRightsAfter: '.',
+    privacyEmail: 'privacy@kindscreen.dev',
+    dataRetentionTitle: '6. Retenção de dados',
+    dataRetentionBody:
+      'Contas de revisores e avaliações associadas são retidas enquanto a conta estiver ativa. Se você excluir sua conta, seu e-mail e nome de usuário serão permanentemente excluídos. As avaliações que você enviou poderão ser anonimizadas e retidas para manter a integridade do catálogo.',
+    contactTitle: '7. Contato',
+    contactBodyBefore: 'Dúvidas sobre esta política? Envie um e-mail para ',
+    contactBodyAfter: '.',
+  },
+};
 
-export type Strings = typeof en
-export const strings: Record<Locale, Strings> = { en, pt }
+export type Strings = typeof en;
+export const strings: Record<Locale, Strings> = { en, pt };

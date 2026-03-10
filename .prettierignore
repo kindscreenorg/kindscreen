@@ -1,0 +1,11 @@
+# Dependencies and build output
+node_modules
+.next
+out
+coverage
+*.min.js
+
+# Lockfiles and generated files
+package-lock.json
+pnpm-lock.yaml
+yarn.lock

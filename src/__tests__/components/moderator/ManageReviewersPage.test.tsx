@@ -11,6 +11,9 @@ vi.mock('@/lib/supabase/server', () => ({
   createClient: vi.fn(),
 }))
 
+// Avoid async ServerTrans in client-style render (suspense/act issues)
+vi.mock('@/lib/i18n/ServerTrans', async () => import('@/__tests__/mocks/serverTransMock'))
+
 // Stub ReviewerList — we test it separately
 vi.mock('@/app/(moderator)/moderator/reviewers/ReviewerList', () => ({
   default: ({ initialReviewers, currentIsAdmin }: { initialReviewers: { username: string }[]; currentIsAdmin: boolean }) =>

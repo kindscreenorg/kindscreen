@@ -1,9 +1,7 @@
 import { describe, it, expect, vi } from 'vitest'
 import { render, screen } from '@testing-library/react'
 import React from 'react'
-
-// Unmock server so PrivacyPage calls real getLocale (which is mocked via i18n/server mock)
-// The global mock in vitest.setup.ts returns 'en' for getLocale
+import { strings } from '@/lib/i18n/strings'
 
 import PrivacyPage from '@/app/(public)/privacy/page'
 
@@ -17,9 +15,8 @@ describe('PrivacyPage', () => {
   })
 
   it('renders PT privacy policy when locale is pt', async () => {
-    // Override the global getLocale mock for this test
     const serverMod = await import('@/lib/i18n/server')
-    vi.mocked(serverMod.getLocale).mockResolvedValueOnce('pt')
+    vi.mocked(serverMod.getT).mockResolvedValueOnce(strings.pt)
 
     const jsx = await PrivacyPage()
     render(jsx as React.ReactElement)

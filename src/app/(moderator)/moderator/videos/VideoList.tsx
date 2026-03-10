@@ -1,76 +1,111 @@
-'use client'
+'use client';
 
-import { useState } from 'react'
-import Image from 'next/image'
+import { useState } from 'react';
+import Image from 'next/image';
+import { useT } from '@/lib/i18n/client';
 
 export interface VideoRow {
-  id: string
-  title: string
-  youtube_id: string
-  thumbnail_url: string | null
-  status: string
-  category: string
-  age_band: string
-  approval_count: number
-  rejection_count: number
+  id: string;
+  title: string;
+  youtube_id: string;
+  thumbnail_url: string | null;
+  status: string;
+  category: string;
+  age_band: string;
+  approval_count: number;
+  rejection_count: number;
 }
 
-type StatusFilter = 'all' | 'approved' | 'pending' | 'rejected'
+type StatusFilter = 'all' | 'approved' | 'pending' | 'rejected';
 
 interface Props {
-  initialVideos: VideoRow[]
-}
-
-const STATUS_TABS: { key: StatusFilter; label: string }[] = [
-  { key: 'all', label: 'All' },
-  { key: 'approved', label: 'Approved' },
-  { key: 'pending', label: 'Pending' },
-  { key: 'rejected', label: 'Rejected' },
-]
-
-function StatusBadge({ status }: { status: string }) {
-  const base = 'inline-block px-2 py-0.5 rounded-full text-xs font-semibold'
-  if (status === 'approved') return <span className={`${base} bg-sage-100 text-sage-700`}>Approved</span>
-  if (status === 'rejected' || status === 'suspended') return <span className={`${base} bg-rose-100 text-rose-700`}>{status}</span>
-  return <span className={`${base} bg-warm-100 text-warm-600`}>{status}</span>
+  initialVideos: VideoRow[];
 }
 
 export default function VideoList({ initialVideos }: Props) {
-  const [videos, setVideos] = useState(initialVideos)
-  const [filter, setFilter] = useState<StatusFilter>('all')
-  const [pending, setPending] = useState<Record<string, boolean>>({})
-  const [errors, setErrors] = useState<Record<string, string>>({})
+  const t = useT();
+  const STATUS_TABS: { key: StatusFilter; label: string }[] = [
+    { key: 'all', label: t.allVideosPage.all },
+    { key: 'approved', label: t.allVideosPage.approved },
+    { key: 'pending', label: t.allVideosPage.pending },
+    { key: 'rejected', label: t.allVideosPage.rejected },
+  ];
+
+  const [videos, setVideos] = useState(initialVideos);
+  const [filter, setFilter] = useState<StatusFilter>('all');
+  const [pending, setPending] = useState<Record<string, boolean>>({});
+  const [errors, setErrors] = useState<Record<string, string>>({});
 
   async function handleAction(videoId: string, action: 'reject' | 'restore') {
-    setPending((p) => ({ ...p, [videoId]: true }))
-    setErrors((e) => { const next = { ...e }; delete next[videoId]; return next })
+    setPending((p) => ({ ...p, [videoId]: true }));
+    setErrors((e) => {
+      const next = { ...e };
+      delete next[videoId];
+      return next;
+    });
 
     try {
       const res = await fetch(`/api/moderator/videos/${videoId}`, {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ action }),
-      })
+      });
 
       if (!res.ok) {
-        const json = (await res.json()) as { error?: string }
-        setErrors((e) => ({ ...e, [videoId]: json.error ?? 'Something went wrong.' }))
-        return
+        const json = (await res.json()) as { error?: string };
+        setErrors((e) => ({
+          ...e,
+          [videoId]: json.error ?? 'Something went wrong.',
+        }));
+        return;
       }
 
-      const updated = (await res.json()) as { id: string; status: string }
-      setVideos((prev) => prev.map((v) => v.id === updated.id ? { ...v, status: updated.status } : v))
+      const updated = (await res.json()) as { id: string; status: string };
+      setVideos((prev) =>
+        prev.map((v) =>
+          v.id === updated.id ? { ...v, status: updated.status } : v,
+        ),
+      );
     } catch {
-      setErrors((e) => ({ ...e, [videoId]: 'Could not reach the server.' }))
+      setErrors((e) => ({ ...e, [videoId]: 'Could not reach the server.' }));
     } finally {
-      setPending((p) => { const next = { ...p }; delete next[videoId]; return next })
+      setPending((p) => {
+        const next = { ...p };
+        delete next[videoId];
+        return next;
+      });
     }
   }
 
-  const filtered = filter === 'all' ? videos : videos.filter((v) => {
-    if (filter === 'rejected') return v.status === 'rejected' || v.status === 'suspended'
-    return v.status === filter
-  })
+  const filtered =
+    filter === 'all'
+      ? videos
+      : videos.filter((v) => {
+          if (filter === 'rejected')
+            return v.status === 'rejected' || v.status === 'suspended';
+          return v.status === filter;
+        });
+
+  function StatusBadge({ status }: { status: string }) {
+    const base = 'inline-block px-2 py-0.5 rounded-full text-xs font-semibold';
+    if (status === 'approved')
+      return (
+        <span className={`${base} bg-sage-100 text-sage-700`}>
+          {t.allVideosPage.approved}
+        </span>
+      );
+    if (status === 'rejected' || status === 'suspended')
+      return (
+        <span className={`${base} bg-rose-100 text-rose-700`}>
+          {t.allVideosPage.rejected}
+        </span>
+      );
+    return (
+      <span className={`${base} bg-warm-100 text-warm-600`}>
+        {t.allVideosPage.pending}
+      </span>
+    );
+  }
 
   return (
     <div>
@@ -95,7 +130,7 @@ export default function VideoList({ initialVideos }: Props) {
       {filtered.length === 0 ? (
         <div className="flex flex-col items-center justify-center min-h-[30vh] text-center px-4">
           <div className="text-4xl mb-3">📭</div>
-          <p className="text-sm text-warm-500">No videos in this category.</p>
+          <p className="text-sm text-warm-500">{t.allVideosPage.noVideos}</p>
         </div>
       ) : (
         <div className="space-y-3">
@@ -126,13 +161,19 @@ export default function VideoList({ initialVideos }: Props) {
                   </p>
                   <div className="flex flex-wrap gap-1.5 items-center mb-1">
                     <StatusBadge status={video.status} />
-                    <span className="text-xs text-warm-400">{video.category}</span>
+                    <span className="text-xs text-warm-400">
+                      {video.category}
+                    </span>
                     <span className="text-xs text-warm-400">·</span>
-                    <span className="text-xs text-warm-400">{video.age_band}</span>
+                    <span className="text-xs text-warm-400">
+                      {video.age_band}
+                    </span>
                   </div>
 
                   {errors[video.id] && (
-                    <p className="text-xs text-rose-500 mt-1">{errors[video.id]}</p>
+                    <p className="text-xs text-rose-500 mt-1">
+                      {errors[video.id]}
+                    </p>
                   )}
 
                   {/* Actions */}
@@ -144,17 +185,22 @@ export default function VideoList({ initialVideos }: Props) {
                         disabled={pending[video.id]}
                         className="py-1.5 px-3 rounded-xl border-2 border-rose-300 bg-rose-50 text-rose-700 text-xs font-semibold hover:bg-rose-100 disabled:opacity-50 transition-colors"
                       >
-                        {pending[video.id] ? '…' : '✕ Remove from catalog'}
+                        {pending[video.id]
+                          ? t.allVideosPage.loading
+                          : t.allVideosPage.removeFromCatalog}
                       </button>
                     )}
-                    {(video.status === 'rejected' || video.status === 'suspended') && (
+                    {(video.status === 'rejected' ||
+                      video.status === 'suspended') && (
                       <button
                         type="button"
                         onClick={() => handleAction(video.id, 'restore')}
                         disabled={pending[video.id]}
                         className="py-1.5 px-3 rounded-xl border-2 border-sage-300 bg-sage-50 text-sage-700 text-xs font-semibold hover:bg-sage-100 disabled:opacity-50 transition-colors"
                       >
-                        {pending[video.id] ? '…' : '✓ Restore'}
+                        {pending[video.id]
+                          ? t.allVideosPage.loading
+                          : t.allVideosPage.restoreFromCatalog}
                       </button>
                     )}
                   </div>
@@ -165,5 +211,5 @@ export default function VideoList({ initialVideos }: Props) {
         </div>
       )}
     </div>
-  )
+  );
 }

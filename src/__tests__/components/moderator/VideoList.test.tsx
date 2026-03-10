@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest'
-import { render, screen, waitFor } from '@testing-library/react'
+import { render, screen, waitFor, within } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import React from 'react'
 
@@ -153,11 +153,11 @@ describe('VideoList', () => {
     const rejectBtns = screen.getAllByRole('button', { name: /remove from catalog/i })
     await user.click(rejectBtns[0])
     await waitFor(() => {
-      // Video 1 still in list with updated status
       expect(screen.getByText('Video 1')).toBeInTheDocument()
-      expect(screen.getByText('rejected')).toBeInTheDocument()
-      // Video 2 unchanged
       expect(screen.getByText('Video 2')).toBeInTheDocument()
+      const card1 = screen.getByText('Video 1').closest('.card-warm')
+      expect(card1).toBeInTheDocument()
+      expect(within(card1!).getByText('Rejected')).toBeInTheDocument()
     })
   })
 
