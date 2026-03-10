@@ -31,6 +31,12 @@ describe('ReviewerList', () => {
     expect(screen.getByText('10 reviews')).toBeInTheDocument()
   })
 
+  it('renders singular "review" when review_count is 1', () => {
+    render(<ReviewerList initialReviewers={[makeReviewer({ review_count: 1 })]} currentIsAdmin={false} />)
+    expect(screen.getByText('alice')).toBeInTheDocument()
+    expect(screen.getByText('1 review')).toBeInTheDocument()
+  })
+
   it('shows Admin badge for admin reviewers', () => {
     render(<ReviewerList initialReviewers={[makeReviewer({ is_admin: true })]} currentIsAdmin={false} />)
     expect(screen.getByText('Admin')).toBeInTheDocument()
