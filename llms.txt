@@ -1,0 +1,45 @@
+# KindScreen
+
+> Parent-curated catalog of safe YouTube videos for children aged 3–12.
+
+KindScreen is an open source platform where real parents watch and approve YouTube videos before they enter a catalog available to families. No algorithm decides what's safe — only humans do. Every video requires 3 independent parent approvals. One flag from any visitor can trigger moderator review.
+
+## Founder
+
+Built by Felipe Amarante ([@felipeamarante](https://github.com/felipeamarante)) after YouTube Kids exposed his daughter to inappropriate content. The premise: instead of trying to block bad content, only allow verified good content.
+
+## How it works
+
+- **Browse** — anonymous visitors browse the catalog by age band and category. Videos play embedded with YouTube's recommendation engine disabled.
+- **Submit** — registered reviewers submit YouTube URLs.
+- **Review** — reviewers answer 5 safety questions (blind review — no one sees others' verdicts until they submit). 3 approvals → video enters catalog.
+- **Flag** — any visitor can flag an approved video. 3 flags → suspended for moderator review.
+
+## User roles
+
+- Anonymous visitor: browse, watch, flag
+- Reviewer: submit videos, review others' submissions
+- Trusted Reviewer: same as reviewer, approval counts as 1.5 votes
+- Moderator: override decisions, remove/restore videos, manage reviewers
+- Admin: full access
+
+## Tech stack
+
+- Next.js 15 (App Router), React 19, TypeScript
+- Tailwind CSS v3
+- Supabase (PostgreSQL + Row-Level Security + Auth)
+- Hosted on Vercel
+- YouTube Data API v3 for video metadata
+
+## Key links
+
+- [GitHub](https://github.com/kindscreenorg/kindscreen): full source code, open source under MIT
+- [CONTRIBUTING.md](https://github.com/kindscreenorg/kindscreen/blob/main/CONTRIBUTING.md): how to contribute as a reviewer or developer
+- [GitHub Sponsors](https://github.com/sponsors/felipeamarante): how the project is funded
+
+## Principles
+
+- Safety first — when in doubt, reject or rate for an older age band
+- No VC, no ads, no tracking — community funded
+- Built in public — all code and decisions are open
+- Humans in the loop — AI may assist, parents always decide
