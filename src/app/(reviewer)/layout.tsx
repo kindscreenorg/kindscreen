@@ -1,6 +1,7 @@
 import Link from 'next/link';
 import Image from 'next/image';
 import { getT } from '@/lib/i18n/server';
+import SignOutButton from '@/components/SignOutButton';
 
 export default async function ReviewerLayout({
   children,
@@ -21,9 +22,12 @@ export default async function ReviewerLayout({
             priority
           />
         </Link>
-        <Link href="/reviewer/submit" className="btn-primary text-sm py-2 px-4">
-          {t.reviewerDashboard.submitVideo}
-        </Link>
+        <div className="flex items-center gap-2">
+          <Link href="/reviewer/submit" className="btn-primary text-sm py-2 px-4">
+            {t.reviewerDashboard.submitVideo}
+          </Link>
+          <SignOutButton label={t.nav.signOut} className="btn-secondary text-sm py-2 px-4" />
+        </div>
       </nav>
       <main className="min-h-screen bg-cream-50">{children}</main>
     </>

@@ -3,11 +3,20 @@ import Image from 'next/image'
 import { createClient } from '@/lib/supabase/server'
 import { getT } from '@/lib/i18n/server'
 import Footer from '@/components/Footer'
+import NavUser from '@/components/NavUser'
 
 export default async function PublicLayout({ children }: { children: React.ReactNode }) {
   const supabase = await createClient()
   const { data: { user } } = await supabase.auth.getUser()
   const t = await getT()
+
+  let username: string | null = null
+  if (user) {
+    const { data } = await (
+      supabase.from('reviewers').select('username').eq('id', user.id).single()
+    ) as unknown as { data: { username: string } | null }
+    username = data?.username ?? user.email?.split('@')[0] ?? 'you'
+  }
 
   return (
     <>
@@ -17,9 +26,11 @@ export default async function PublicLayout({ children }: { children: React.React
         </Link>
         <div className="flex items-center gap-2">
           {user ? (
-            <Link href="/reviewer" className="btn-secondary text-sm py-2 px-4">
-              {t.nav.dashboard}
-            </Link>
+            <NavUser
+              username={username!}
+              greeting={t.nav.greeting.replace('{username}', username!)}
+              signOutLabel={t.nav.signOut}
+            />
           ) : (
             <Link href="/signup" className="btn-secondary text-sm py-2 px-4">
               {t.nav.becomeReviewer}

@@ -5,6 +5,20 @@ import { strings } from '@/lib/i18n/strings'
 
 vi.mock('@/lib/i18n/server', () => ({ getT: vi.fn().mockResolvedValue(strings.en) }))
 
+const { mockCreateClient } = vi.hoisted(() => ({ mockCreateClient: vi.fn() }))
+vi.mock('@/lib/supabase/server', () => ({ createClient: mockCreateClient }))
+
+function mockAuth(user: object | null) {
+  mockCreateClient.mockResolvedValue({
+    auth: { getUser: vi.fn().mockResolvedValue({ data: { user } }) },
+    from: vi.fn().mockReturnValue({
+      select: vi.fn().mockReturnThis(),
+      eq: vi.fn().mockReturnThis(),
+      single: vi.fn().mockResolvedValue({ data: null }),
+    }),
+  })
+}
+
 import NotFound from '@/app/not-found'
 import HomePage from '@/app/page'
 import SignupConfirmPage from '@/app/(auth)/signup/confirm/page'
@@ -19,11 +33,20 @@ describe('NotFound page', () => {
 })
 
 describe('HomePage', () => {
-  it('renders the landing page with browse and signup links', async () => {
-    const jsx = await HomePage()
-    render(jsx as React.ReactElement)
+  it('shows auth links when logged out', async () => {
+    mockAuth(null)
+    render(await HomePage() as React.ReactElement)
     expect(screen.getByRole('link', { name: /browse videos/i })).toBeInTheDocument()
     expect(screen.getByRole('link', { name: /become a reviewer/i })).toBeInTheDocument()
+    expect(screen.getByRole('link', { name: /log in/i })).toBeInTheDocument()
+  })
+
+  it('shows Dashboard and hides auth links when logged in', async () => {
+    mockAuth({ id: 'u1', email: 'user@example.com' })
+    render(await HomePage() as React.ReactElement)
+    expect(screen.getByRole('link', { name: /go to dashboard/i })).toBeInTheDocument()
+    expect(screen.queryByRole('link', { name: /become a reviewer/i })).not.toBeInTheDocument()
+    expect(screen.queryByRole('link', { name: /log in/i })).not.toBeInTheDocument()
   })
 })
 

@@ -4,6 +4,8 @@ const en = {
   nav: {
     becomeReviewer: 'Become a Reviewer',
     dashboard: 'Dashboard',
+    signOut: 'Sign out',
+    greeting: 'Hi, {username}!',
   },
   footer: {
     privacy: 'Privacy Policy',
@@ -16,6 +18,7 @@ const en = {
     becomeReviewer: 'Become a Reviewer',
     supportProject: 'Support the project',
     login: 'Log in',
+    goToDashboard: 'Go to Dashboard',
     disclaimer:
       'Age bands are suggested by real parents and are a guide, not a guarantee. Every child is different — you know yours best.',
     openSource: '★ Open source on GitHub',
@@ -334,6 +337,8 @@ const pt: typeof en = {
   nav: {
     becomeReviewer: 'Seja um Revisor',
     dashboard: 'Dashboard',
+    signOut: 'Sair',
+    greeting: 'Oi, {username}!',
   },
   footer: {
     privacy: 'Política de Privacidade',
@@ -346,6 +351,7 @@ const pt: typeof en = {
     becomeReviewer: 'Seja um Revisor',
     supportProject: 'Apoiar o projeto',
     login: 'Entrar',
+    goToDashboard: 'Ir para o Painel',
     disclaimer:
       'As faixas etárias são sugeridas por pais reais e servem como guia, não como garantia. Cada criança é diferente — você conhece a sua melhor.',
      openSource: '★ Código aberto no GitHub',

@@ -1,9 +1,12 @@
 import Link from 'next/link';
 import Image from 'next/image';
+import { createClient } from '@/lib/supabase/server';
 import { getT } from '@/lib/i18n/server';
 import Footer from '@/components/Footer';
 
 export default async function HomePage() {
+  const supabase = await createClient();
+  const { data: { user } } = await supabase.auth.getUser();
   const t = await getT();
 
   return (
@@ -33,9 +36,20 @@ export default async function HomePage() {
           <Link href="/browse" className="btn-primary text-center">
             {t.home.browseVideos}
           </Link>
-          <Link href="/signup" className="btn-secondary text-center">
-            {t.home.becomeReviewer}
-          </Link>
+          {user ? (
+            <Link href="/reviewer" className="btn-secondary text-center">
+              {t.home.goToDashboard}
+            </Link>
+          ) : (
+            <>
+              <Link href="/signup" className="btn-secondary text-center">
+                {t.home.becomeReviewer}
+              </Link>
+              <Link href="/login" className="btn-secondary text-center">
+                {t.home.login}
+              </Link>
+            </>
+          )}
           <a
             href="https://github.com/sponsors/felipeamarante"
             target="_blank"
@@ -44,9 +58,6 @@ export default async function HomePage() {
           >
             {t.home.supportProject}
           </a>
-          <Link href="/login" className="btn-secondary text-center">
-            {t.home.login}
-          </Link>
         </div>
 
         {/* GitHub link */}
