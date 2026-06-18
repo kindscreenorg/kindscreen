@@ -19,11 +19,27 @@ import { loadYTApi } from '@/lib/utils/youtube'
 export default function VideoModal({ video, onClose, onVideoChange }: VideoModalProps) {
   const t = useT()
   const playerRef = useRef<YTPlayer | null>(null)
+  const containerRef = useRef<HTMLDivElement>(null)
   const [videoEnded, setVideoEnded] = useState(false)
   const [upNextVideos, setUpNextVideos] = useState<VideoWithChannel[]>([])
   const [flagState, setFlagState] = useState<FlagState>('idle')
   const [flagReason, setFlagReason] = useState('')
   const [flagError, setFlagError] = useState('')
+  const [isFullscreen, setIsFullscreen] = useState(false)
+
+  useEffect(() => {
+    const onFsChange = () => setIsFullscreen(!!document.fullscreenElement)
+    document.addEventListener('fullscreenchange', onFsChange)
+    return () => document.removeEventListener('fullscreenchange', onFsChange)
+  }, [])
+
+  function toggleFullscreen() {
+    if (document.fullscreenElement) {
+      void document.exitFullscreen()
+    } else {
+      void containerRef.current?.requestFullscreen()
+    }
+  }
 
   // ESC key + scroll lock
   useEffect(() => {
@@ -72,7 +88,7 @@ export default function VideoModal({ video, onClose, onVideoChange }: VideoModal
       playerRef.current?.destroy()
       playerRef.current = new window.YT.Player('yt-modal-player', {
         videoId: video.youtube_id,
-        playerVars: { rel: 0, modestbranding: 1 },
+        playerVars: { rel: 0, modestbranding: 1, fs: 0 },
         events: {
           onStateChange: (e) => {
             if (e.data === window.YT.PlayerState.ENDED) {
@@ -138,9 +154,33 @@ export default function VideoModal({ video, onClose, onVideoChange }: VideoModal
           ✕
         </button>
 
-        {/* Player container */}
-        <div className="relative aspect-video rounded-2xl overflow-hidden bg-black">
+        {/* Player container — fullscreened as a unit so our overlays stay on top */}
+        <div ref={containerRef} className="relative aspect-video rounded-2xl overflow-hidden bg-black">
           <div id="yt-modal-player" className="w-full h-full" />
+
+          {/* Block "Mais vídeos" and YouTube logo from navigating away.
+              Covers the bottom-right icon strip; seek bar and our fullscreen
+              button remain reachable. Stays on top even in fullscreen because
+              we fullscreen the container, not the iframe. */}
+          <div className="absolute bottom-0 right-0 w-96 h-10 cursor-default" aria-hidden="true" />
+
+          {/* Custom fullscreen button — replaces YouTube's (disabled via fs=0) */}
+          <button
+            type="button"
+            onClick={toggleFullscreen}
+            className="absolute bottom-1.5 right-1.5 z-10 text-white/70 hover:text-white transition-colors"
+            aria-label={isFullscreen ? 'Exit fullscreen' : 'Enter fullscreen'}
+          >
+            {isFullscreen ? (
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M5 16h3v3h2v-5H5v2zm3-8H5v2h5V5H8v3zm6 11h2v-3h3v-2h-5v5zm2-11V5h-2v5h5V8h-3z"/>
+              </svg>
+            ) : (
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M7 14H5v5h5v-2H7v-3zm-2-4h2V7h3V5H5v5zm12 7h-3v2h5v-5h-2v3zM14 5v2h3v3h2V5h-5z"/>
+              </svg>
+            )}
+          </button>
 
           {/* Up-next overlay — shown when video ends */}
           {videoEnded && (
