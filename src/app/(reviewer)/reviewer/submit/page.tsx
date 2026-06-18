@@ -230,8 +230,7 @@ export default function SubmitPage() {
             <option value="">{t.submitPage.selectCategory}</option>
             {VIDEO_CATEGORIES.map((c) => (
               <option key={c} value={c}>
-                {/* v8 ignore next */
-                CATEGORY_LABELS[c] ?? c}
+                {CATEGORY_LABELS[c]}
               </option>
             ))}
           </select>
@@ -255,8 +254,7 @@ export default function SubmitPage() {
             <option value="">{t.submitPage.selectLanguage}</option>
             {VIDEO_LANGUAGES.map((l) => (
               <option key={l} value={l}>
-                {/* v8 ignore next */
-                LANGUAGE_LABELS[l] ?? l}
+                {LANGUAGE_LABELS[l]}
               </option>
             ))}
           </select>
