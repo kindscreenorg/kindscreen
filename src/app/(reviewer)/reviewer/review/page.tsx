@@ -256,8 +256,7 @@ export default function ReviewPage() {
                     : 'bg-white border-warm-200 text-warm-700 hover:border-warm-300'
                 }`}
               >
-                {/* v8 ignore next */
-                ageBandLabels[band] ?? band}
+                {ageBandLabels[band]}
               </button>
             ))}
           </div>

@@ -173,8 +173,7 @@ export default function BrowseClient({
               className={`${chipBase} ${ageBand === band ? chipActive : chipInactive}`}
               onClick={() => handleAgeBandChip(band)}
             >
-              {/* v8 ignore next */
-              AGE_BAND_LABELS[band] ?? band}
+              {AGE_BAND_LABELS[band]}
             </button>
           ))}
         </div>
@@ -210,8 +209,7 @@ export default function BrowseClient({
               className={`${chipBase} ${language === lang ? chipActive : chipInactive}`}
               onClick={() => handleLanguageChip(lang)}
             >
-              {/* v8 ignore next */
-              LANGUAGE_LABELS[lang] ?? lang}
+              {LANGUAGE_LABELS[lang]}
             </button>
           ))}
         </div>
