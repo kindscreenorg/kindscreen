@@ -340,6 +340,38 @@ describe('VideoModal', () => {
     })
   })
 
+  it('toggleFullscreen calls requestFullscreen on container when not in fullscreen', async () => {
+    const mockReqFs = vi.fn().mockResolvedValue(undefined)
+    Object.defineProperty(document, 'fullscreenElement', { value: null, configurable: true })
+    Object.defineProperty(HTMLElement.prototype, 'requestFullscreen', { value: mockReqFs, configurable: true, writable: true })
+    const user = userEvent.setup()
+    render(<VideoModal video={makeVideo()} onClose={vi.fn()} />)
+    await user.click(screen.getByLabelText('Enter fullscreen'))
+    expect(mockReqFs).toHaveBeenCalled()
+    Reflect.deleteProperty(HTMLElement.prototype, 'requestFullscreen')
+  })
+
+  it('toggleFullscreen calls exitFullscreen when fullscreenElement is set', async () => {
+    const mockExit = vi.fn().mockResolvedValue(undefined)
+    Object.defineProperty(document, 'fullscreenElement', { value: document.body, configurable: true })
+    Object.defineProperty(document, 'exitFullscreen', { value: mockExit, configurable: true })
+    const user = userEvent.setup()
+    render(<VideoModal video={makeVideo()} onClose={vi.fn()} />)
+    await user.click(screen.getByLabelText('Enter fullscreen'))
+    expect(mockExit).toHaveBeenCalled()
+    Object.defineProperty(document, 'fullscreenElement', { value: null, configurable: true })
+  })
+
+  it('fullscreenchange event updates isFullscreen state and button label', async () => {
+    Object.defineProperty(document, 'fullscreenElement', { value: null, configurable: true })
+    render(<VideoModal video={makeVideo()} onClose={vi.fn()} />)
+    expect(screen.getByLabelText('Enter fullscreen')).toBeInTheDocument()
+    Object.defineProperty(document, 'fullscreenElement', { value: document.body, configurable: true })
+    await act(async () => { document.dispatchEvent(new Event('fullscreenchange')) })
+    expect(screen.getByLabelText('Exit fullscreen')).toBeInTheDocument()
+    Object.defineProperty(document, 'fullscreenElement', { value: null, configurable: true })
+  })
+
   it('does not crash when component unmounts before loadYTApi callback fires (destroyed branch)', () => {
     // Covers `if (destroyed) return` (line 53)
     let capturedCallback: (() => void) | null = null

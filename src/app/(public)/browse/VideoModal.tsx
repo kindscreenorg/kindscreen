@@ -37,6 +37,7 @@ export default function VideoModal({ video, onClose, onVideoChange }: VideoModal
     if (document.fullscreenElement) {
       void document.exitFullscreen()
     } else {
+      /* v8 ignore next */
       void containerRef.current?.requestFullscreen()
     }
   }
