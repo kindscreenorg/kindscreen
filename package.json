@@ -33,8 +33,8 @@
         "@types/node": "^25.0.0",
         "@types/react": "^19.0.0",
         "@types/react-dom": "^19.0.0",
-        "@vitejs/plugin-react": "^5.1.4",
-        "@vitest/coverage-v8": "^4.0.18",
+        "@vitejs/plugin-react": "^5.2.0",
+        "@vitest/coverage-v8": "^4.1.8",
         "eslint": "^9.0.0",
         "eslint-config-next": "^16.1.6",
         "jsdom": "^28.1.0",
@@ -43,6 +43,6 @@
         "supabase": "^2.77.0",
         "tailwindcss": "^4.2.1",
         "typescript": "^5.0.0",
-        "vitest": "^4.0.18"
+        "vitest": "^4.1.8"
     }
 }
